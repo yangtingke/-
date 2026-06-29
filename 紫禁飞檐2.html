@@ -1,311 +1,818 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>紫禁飞檐 · 深度解析</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:linear-gradient(135deg,#fff0f2 0%,#fde0e4 50%,#f8d0d5 100%);min-height:100vh;font-family:'Noto Serif SC',serif;color:#8b2040}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:#fff0f2}
-::-webkit-scrollbar-thumb{background:#c0405a;border-radius:2px}
-#page-header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px 14px;background:linear-gradient(180deg,rgba(255,210,215,.88),rgba(245,160,175,.92));border-bottom:2px solid rgba(192,64,90,.22);position:sticky;top:0;z-index:200}
-#page-header h1{font-size:32px;font-weight:700;letter-spacing:5px;background:linear-gradient(135deg,#8b2040,#c0405a,#6b1030);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;background:linear-gradient(135deg,#c0405a,#e07090);color:#fff;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;letter-spacing:1px;box-shadow:0 2px 10px rgba(192,64,90,.35);border:1px solid rgba(224,112,144,.6);transition:filter .2s}
-.back-btn:hover{filter:brightness(1.1)}
-#page-layout{display:flex;min-height:calc(100vh - 70px)}
-#kg-sidebar{width:260px;flex-shrink:0;position:sticky;top:70px;height:calc(100vh - 70px);overflow-y:auto;padding:18px 14px;border-right:1px solid rgba(192,64,90,.22);background:rgba(255,240,243,.78);backdrop-filter:blur(8px)}
-.kg-title{font-size:13px;font-weight:700;color:#8b2040;letter-spacing:2px;border-bottom:1.5px solid rgba(192,64,90,.35);padding-bottom:8px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.kg-title::before{content:'◆';font-size:8px;color:#c0405a}
-.kg-cat{margin-bottom:6px;border-radius:8px;overflow:hidden;border:1px solid rgba(192,64,90,.2)}
-.kg-cat-hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(192,64,90,.1);cursor:pointer;font-size:13px;font-weight:700;color:#8b2040;user-select:none;transition:background .2s}
-.kg-cat-hd:hover{background:rgba(192,64,90,.2)}
-.kg-cat-hd .arrow{font-size:10px;transition:transform .25s;color:#c0405a}
-.kg-cat.open .kg-cat-hd .arrow{transform:rotate(90deg)}
-.kg-items{display:none;padding:4px 0;background:rgba(255,255,255,.62)}
-.kg-cat.open .kg-items{display:block}
-.kg-item{padding:7px 16px 7px 20px;font-size:12px;color:#a03050;cursor:pointer;transition:background .15s,color .15s;border-left:2px solid transparent;line-height:1.5}
-.kg-item:hover{background:rgba(192,64,90,.12);color:#8b2040;border-left-color:#c0405a}
-.kg-item.active{background:rgba(192,64,90,.16);color:#8b2040;border-left-color:#c0405a;font-weight:600}
-#content-area{flex:1;padding:24px 280px 40px 32px;overflow-y:auto;min-width:0}
-.content-section{margin-bottom:32px;scroll-margin-top:88px}
-.section-heading{font-size:20px;font-weight:700;color:#8b2040;letter-spacing:3px;border-left:4px solid #c0405a;padding-left:14px;margin-bottom:14px}
-.section-sub{font-size:15px;font-weight:700;color:#a03050;letter-spacing:2px;border-bottom:1px dashed rgba(192,64,90,.35);padding-bottom:6px;margin:16px 0 10px}
-.section-body{font-size:13.5px;color:#7a1830;line-height:2;background:rgba(255,255,255,.72);border-radius:10px;padding:14px 18px;border:1px solid rgba(192,64,90,.16);box-shadow:0 2px 10px rgba(192,64,90,.07)}
-#gallery-section{margin-bottom:40px;scroll-margin-top:88px}
-.gallery-title{font-size:20px;font-weight:700;color:#8b2040;letter-spacing:3px;border-left:4px solid #c0405a;padding-left:14px;margin-bottom:18px}
-.gallery-grid{columns:3;column-gap:12px}
-.gallery-item{break-inside:avoid;margin-bottom:12px;border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;position:relative}
-.gallery-item:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(192,64,90,.28)}
-.gallery-item img{width:100%;display:block;object-fit:cover}
-.gallery-item .caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(100,10,30,.78));color:#fff;font-size:11px;padding:14px 10px 7px;letter-spacing:1px;opacity:0;transition:opacity .25s}
-.gallery-item:hover .caption{opacity:1}
-#lightbox{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);align-items:center;justify-content:center;cursor:zoom-out}
-#lightbox.active{display:flex}
-#lightbox-img{max-width:88vw;max-height:88vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.6);object-fit:contain}
-#lightbox-close{position:absolute;top:18px;right:26px;font-size:36px;color:#fff;cursor:pointer;opacity:.8;transition:opacity .2s}
-#lightbox-close:hover{opacity:1}
-#lightbox-caption{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;letter-spacing:2px;white-space:nowrap}
-#gonghuayan-wrap{position:fixed;top:0;right:0;width:350px;height:350px;z-index:9999;pointer-events:auto}
-#gonghuayan{transition:filter .35s ease;cursor:pointer;position:absolute;bottom:0;right:0;height:350px;width:auto;pointer-events:auto}
-#gonghuayan:hover{filter:drop-shadow(0 0 10px rgba(255,255,255,.95)) drop-shadow(0 0 22px rgba(255,255,255,.7)) drop-shadow(0 0 4px rgba(255,200,220,.8))}
-.char-bubble{position:absolute;background:rgba(255,245,247,.97);border:1.5px solid #c0405a;border-radius:14px;padding:10px 16px;font-size:13px;color:#8b2040;white-space:nowrap;box-shadow:0 4px 22px rgba(200,80,100,.22);z-index:10000;letter-spacing:.5px;line-height:1.6}
-.char-bubble::after{content:'';position:absolute;right:-9px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:9px solid #c0405a}
-.char-bubble::before{content:'';position:absolute;right:-7px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:8px solid rgba(255,245,247,.97);z-index:1}
-.char-q-list{margin-top:8px;border-top:1px solid rgba(192,64,90,.3);padding-top:8px;display:flex;flex-direction:column;gap:5px}
-.char-q-item{font-size:12px;color:#c0405a;cursor:pointer;padding:3px 6px;border-radius:6px;transition:background .15s,color .15s;pointer-events:auto;line-height:1.5;white-space:normal}
-.char-q-item:hover{background:rgba(192,64,90,.12);color:#8b2040}
-#char-answer-bubble{position:absolute;background:rgba(255,245,247,.97);border:1.5px solid #c0405a;border-radius:14px;padding:12px 16px;font-size:13px;color:#8b2040;white-space:normal;box-shadow:0 4px 22px rgba(200,80,100,.22);z-index:10001;letter-spacing:.5px;line-height:1.7;width:260px;display:none;top:60px;right:calc(100% + 12px)}
-#char-answer-bubble::after{content:'';position:absolute;right:-9px;top:18px;border:5px solid transparent;border-left-color:rgba(255,245,247,.97)}
-#char-answer-bubble::before{content:'';position:absolute;right:-11px;top:17px;border:6px solid transparent;border-left-color:#c0405a}
-#char-answer-close{display:block;margin-top:10px;font-size:11px;color:#c0405a;cursor:pointer;text-align:right;pointer-events:auto}
-#ai-chat-area{margin-top:10px;border-top:1px solid rgba(192,64,90,.3);padding-top:10px}
-#ai-input-row{display:flex;gap:6px;align-items:flex-end}
-#ai-user-input{flex:1;font-size:12px;font-family:'Noto Serif SC',serif;padding:5px 10px;border-radius:10px;border:1px solid #c0405a;background:rgba(255,255,255,.9);color:#8b2040;outline:none;resize:none;min-height:34px;max-height:80px;line-height:1.5}
-#ai-send-btn{padding:5px 10px;background:linear-gradient(135deg,#c0405a,#e07090);color:#fff;border:none;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:'Noto Serif SC',serif;flex-shrink:0}
-#ai-send-btn:disabled{opacity:.5;cursor:not-allowed}
-#ai-response-area{margin-top:8px;font-size:12px;color:#8b2040;line-height:1.75;min-height:0;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
-.ai-loading::after{content:'…';animation:blink .8s step-end infinite}
-@keyframes blink{50%{opacity:0}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>紫禁飞檐 · 深度解析</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: linear-gradient(135deg, #fff0f2 0%, #fde0e4 50%, #f8d0d5 100%);
+      min-height: 100vh;
+      font-family: 'Noto Serif SC', serif;
+      color: #8b2040
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #fff0f2
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #c0405a;
+      border-radius: 2px
+    }
+
+    #page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px 14px;
+      background: linear-gradient(180deg, rgba(255, 210, 215, .88), rgba(245, 160, 175, .92));
+      border-bottom: 2px solid rgba(192, 64, 90, .22);
+      position: sticky;
+      top: 0;
+      z-index: 200
+    }
+
+    #page-header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      background: linear-gradient(135deg, #8b2040, #c0405a, #6b1030);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 18px;
+      background: linear-gradient(135deg, #c0405a, #e07090);
+      color: #fff;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 10px rgba(192, 64, 90, .35);
+      border: 1px solid rgba(224, 112, 144, .6);
+      transition: filter .2s
+    }
+
+    .back-btn:hover {
+      filter: brightness(1.1)
+    }
+
+    #page-layout {
+      display: flex;
+      min-height: calc(100vh - 70px)
+    }
+
+    #kg-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 70px;
+      height: calc(100vh - 70px);
+      overflow-y: auto;
+      padding: 18px 14px;
+      border-right: 1px solid rgba(192, 64, 90, .22);
+      background: rgba(255, 240, 243, .78);
+      backdrop-filter: blur(8px)
+    }
+
+    .kg-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #8b2040;
+      letter-spacing: 2px;
+      border-bottom: 1.5px solid rgba(192, 64, 90, .35);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .kg-title::before {
+      content: '◆';
+      font-size: 8px;
+      color: #c0405a
+    }
+
+    .kg-cat {
+      margin-bottom: 6px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(192, 64, 90, .2)
+    }
+
+    .kg-cat-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(192, 64, 90, .1);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: #8b2040;
+      user-select: none;
+      transition: background .2s
+    }
+
+    .kg-cat-hd:hover {
+      background: rgba(192, 64, 90, .2)
+    }
+
+    .kg-cat-hd .arrow {
+      font-size: 10px;
+      transition: transform .25s;
+      color: #c0405a
+    }
+
+    .kg-cat.open .kg-cat-hd .arrow {
+      transform: rotate(90deg)
+    }
+
+    .kg-items {
+      display: none;
+      padding: 4px 0;
+      background: rgba(255, 255, 255, .62)
+    }
+
+    .kg-cat.open .kg-items {
+      display: block
+    }
+
+    .kg-item {
+      padding: 7px 16px 7px 20px;
+      font-size: 12px;
+      color: #a03050;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      border-left: 2px solid transparent;
+      line-height: 1.5
+    }
+
+    .kg-item:hover {
+      background: rgba(192, 64, 90, .12);
+      color: #8b2040;
+      border-left-color: #c0405a
+    }
+
+    .kg-item.active {
+      background: rgba(192, 64, 90, .16);
+      color: #8b2040;
+      border-left-color: #c0405a;
+      font-weight: 600
+    }
+
+    #content-area {
+      flex: 1;
+      padding: 24px 280px 40px 32px;
+      overflow-y: auto;
+      min-width: 0
+    }
+
+    .content-section {
+      margin-bottom: 32px;
+      scroll-margin-top: 88px
+    }
+
+    .section-heading {
+      font-size: 20px;
+      font-weight: 700;
+      color: #8b2040;
+      letter-spacing: 3px;
+      border-left: 4px solid #c0405a;
+      padding-left: 14px;
+      margin-bottom: 14px
+    }
+
+    .section-sub {
+      font-size: 15px;
+      font-weight: 700;
+      color: #a03050;
+      letter-spacing: 2px;
+      border-bottom: 1px dashed rgba(192, 64, 90, .35);
+      padding-bottom: 6px;
+      margin: 16px 0 10px
+    }
+
+    .section-body {
+      font-size: 13.5px;
+      color: #7a1830;
+      line-height: 2;
+      background: rgba(255, 255, 255, .72);
+      border-radius: 10px;
+      padding: 14px 18px;
+      border: 1px solid rgba(192, 64, 90, .16);
+      box-shadow: 0 2px 10px rgba(192, 64, 90, .07)
+    }
+
+    #gallery-section {
+      margin-bottom: 40px;
+      scroll-margin-top: 88px
+    }
+
+    .gallery-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #8b2040;
+      letter-spacing: 3px;
+      border-left: 4px solid #c0405a;
+      padding-left: 14px;
+      margin-bottom: 18px
+    }
+
+    .gallery-grid {
+      columns: 3;
+      column-gap: 12px
+    }
+
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .25s, box-shadow .25s;
+      position: relative
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 28px rgba(192, 64, 90, .28)
+    }
+
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      object-fit: cover
+    }
+
+    .gallery-item .caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(100, 10, 30, .78));
+      color: #fff;
+      font-size: 11px;
+      padding: 14px 10px 7px;
+      letter-spacing: 1px;
+      opacity: 0;
+      transition: opacity .25s
+    }
+
+    .gallery-item:hover .caption {
+      opacity: 1
+    }
+
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: rgba(0, 0, 0, .88);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out
+    }
+
+    #lightbox.active {
+      display: flex
+    }
+
+    #lightbox-img {
+      max-width: 88vw;
+      max-height: 88vh;
+      border-radius: 10px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .6);
+      object-fit: contain
+    }
+
+    #lightbox-close {
+      position: absolute;
+      top: 18px;
+      right: 26px;
+      font-size: 36px;
+      color: #fff;
+      cursor: pointer;
+      opacity: .8;
+      transition: opacity .2s
+    }
+
+    #lightbox-close:hover {
+      opacity: 1
+    }
+
+    #lightbox-caption {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-size: 13px;
+      letter-spacing: 2px;
+      white-space: nowrap
+    }
+
+    #gonghuayan-wrap {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 350px;
+      height: 350px;
+      z-index: 9999;
+      pointer-events: auto
+    }
+
+    #gonghuayan {
+      transition: filter .35s ease;
+      cursor: pointer;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      height: 350px;
+      width: auto;
+      pointer-events: auto
+    }
+
+    #gonghuayan:hover {
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, .95)) drop-shadow(0 0 22px rgba(255, 255, 255, .7)) drop-shadow(0 0 4px rgba(255, 200, 220, .8))
+    }
+
+    .char-bubble {
+      position: absolute;
+      background: rgba(255, 245, 247, .97);
+      border: 1.5px solid #c0405a;
+      border-radius: 14px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #8b2040;
+      white-space: nowrap;
+      box-shadow: 0 4px 22px rgba(200, 80, 100, .22);
+      z-index: 10000;
+      letter-spacing: .5px;
+      line-height: 1.6
+    }
+
+    .char-bubble::after {
+      content: '';
+      position: absolute;
+      right: -9px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      border-left: 9px solid #c0405a
+    }
+
+    .char-bubble::before {
+      content: '';
+      position: absolute;
+      right: -7px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 8px solid rgba(255, 245, 247, .97);
+      z-index: 1
+    }
+
+    .char-q-list {
+      margin-top: 8px;
+      border-top: 1px solid rgba(192, 64, 90, .3);
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .char-q-item {
+      font-size: 12px;
+      color: #c0405a;
+      cursor: pointer;
+      padding: 3px 6px;
+      border-radius: 6px;
+      transition: background .15s, color .15s;
+      pointer-events: auto;
+      line-height: 1.5;
+      white-space: normal
+    }
+
+    .char-q-item:hover {
+      background: rgba(192, 64, 90, .12);
+      color: #8b2040
+    }
+
+    #char-answer-bubble {
+      position: absolute;
+      background: rgba(255, 245, 247, .97);
+      border: 1.5px solid #c0405a;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #8b2040;
+      white-space: normal;
+      box-shadow: 0 4px 22px rgba(200, 80, 100, .22);
+      z-index: 10001;
+      letter-spacing: .5px;
+      line-height: 1.7;
+      width: 260px;
+      display: none;
+      top: 60px;
+      right: calc(100% + 12px)
+    }
+
+    #char-answer-bubble::after {
+      content: '';
+      position: absolute;
+      right: -9px;
+      top: 18px;
+      border: 5px solid transparent;
+      border-left-color: rgba(255, 245, 247, .97)
+    }
+
+    #char-answer-bubble::before {
+      content: '';
+      position: absolute;
+      right: -11px;
+      top: 17px;
+      border: 6px solid transparent;
+      border-left-color: #c0405a
+    }
+
+    #char-answer-close {
+      display: block;
+      margin-top: 10px;
+      font-size: 11px;
+      color: #c0405a;
+      cursor: pointer;
+      text-align: right;
+      pointer-events: auto
+    }
+
+    #ai-chat-area {
+      margin-top: 10px;
+      border-top: 1px solid rgba(192, 64, 90, .3);
+      padding-top: 10px
+    }
+
+    #ai-input-row {
+      display: flex;
+      gap: 6px;
+      align-items: flex-end
+    }
+
+    #ai-user-input {
+      flex: 1;
+      font-size: 12px;
+      font-family: 'Noto Serif SC', serif;
+      padding: 5px 10px;
+      border-radius: 10px;
+      border: 1px solid #c0405a;
+      background: rgba(255, 255, 255, .9);
+      color: #8b2040;
+      outline: none;
+      resize: none;
+      min-height: 34px;
+      max-height: 80px;
+      line-height: 1.5
+    }
+
+    #ai-send-btn {
+      padding: 5px 10px;
+      background: linear-gradient(135deg, #c0405a, #e07090);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: 'Noto Serif SC', serif;
+      flex-shrink: 0
+    }
+
+    #ai-send-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    #ai-response-area {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #8b2040;
+      line-height: 1.75;
+      min-height: 0;
+      max-height: 120px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all
+    }
+
+    .ai-loading::after {
+      content: '…';
+      animation: blink .8s step-end infinite
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header id="page-header">
-  <h1>紫禁飞檐 · 深度解析</h1>
-  <a href="紫禁飞檐.html" class="back-btn">← 返回</a>
-</header>
+  <header id="page-header">
+    <h1>紫禁飞檐 · 深度解析</h1>
+    <a href="紫禁飞檐.html" class="back-btn">← 返回</a>
+  </header>
 
-<div id="page-layout">
+  <div id="page-layout">
 
-<aside id="kg-sidebar">
-  <div class="kg-title">知识图谱目录</div>
+    <aside id="kg-sidebar">
+      <div class="kg-title">知识图谱目录</div>
 
-  <div class="kg-cat open" id="cat-history">
-    <div class="kg-cat-hd" onclick="toggleCat('cat-history')"><span>📜 历史价值</span><span class="arrow">▶</span></div>
-    <div class="kg-items">
-      <div class="kg-item" onclick="navTo('sec-h1','皇权象征——太和殿重檐庑殿顶是中国古建筑屋顶等级制度中的最高形制，象征天子至高无上的权威。')">皇权象征</div>
-      <div class="kg-item" onclick="navTo('sec-h2','礼制体系——古代建筑屋顶从高到低分为庑殿、歇山、悬山、硬山四大类，每类又分重檐与单檐，形成严密等级秩序。')">礼制建筑体系</div>
-      <div class="kg-item" onclick="navTo('sec-h3','明永乐肇建——太和殿始建于明永乐十八年（1420年），历经多次火灾重建，现存建筑为清康熙三十四年重建。')">明永乐年间始建</div>
-      <div class="kg-item" onclick="navTo('sec-h4','世界文化遗产——故宫于1987年被列入联合国教科文组织世界文化遗产名录，是全球最大规模的宫殿建筑群。')">世界文化遗产</div>
-    </div>
-  </div>
-
-  <div class="kg-cat" id="cat-form">
-    <div class="kg-cat-hd" onclick="toggleCat('cat-form')"><span>🏛️ 形制特征</span><span class="arrow">▶</span></div>
-    <div class="kg-items">
-      <div class="kg-item" onclick="navTo('sec-f1','庑殿顶形制——四坡五脊，四面均为斜坡屋面，正脊一条加四条垂脊，整体造型庄重对称，气势恢宏。')">庑殿顶形制</div>
-      <div class="kg-item" onclick="navTo('sec-f2','重檐制度——重檐庑殿顶在单层屋檐之下再加一圈围廊屋檐，双层叠加使建筑体量更加宏大，等级高于单檐。')">重檐制度</div>
-      <div class="kg-item" onclick="navTo('sec-f3','屋脊走兽——太和殿正脊两端有吻兽，四条垂脊各有十只走兽，是全国走兽数量最多的建筑，象征至高皇权。')">屋脊走兽</div>
-      <div class="kg-item" onclick="navTo('sec-f4','斗拱出挑——太和殿斗拱层数多达七踩，出挑深远，既支撑宽大屋檐，又形成建筑立面最具特色的装饰层带。')">斗拱出挑比例</div>
-    </div>
-  </div>
-
-  <div class="kg-cat" id="cat-tech">
-    <div class="kg-cat-hd" onclick="toggleCat('cat-tech')"><span>🔧 结构技艺</span><span class="arrow">▶</span></div>
-    <div class="kg-items">
-      <div class="kg-item" onclick="navTo('sec-t1','斗拱构造——由栌斗、华拱、泥道拱、下昂、令拱、要头等构件层叠组合，将屋檐荷载逐级传递至柱头。')">斗拱构造原理</div>
-      <div class="kg-item" onclick="navTo('sec-t2','大木作体系——以柱网确定平面，梁架确定剖面，通过抬梁式构架将屋顶荷载传至柱础，是官式建筑的核心结构逻辑。')">大木作体系</div>
-      <div class="kg-item" onclick="navTo('sec-t3','举折曲线——屋面并非平直斜坡，而是由下至上逐渐增大坡度，形成优美的凹曲线，兼顾排水与美观。')">举折屋面曲线</div>
-      <div class="kg-item" onclick="navTo('sec-t4','琉璃瓦制作——故宫黄色琉璃瓦以高岭土为胎，铅釉为面，1300℃高温烧制，釉面光洁、防水耐久，象征皇家专用。')">琉璃瓦制作</div>
-    </div>
-  </div>
-</aside>
-
-<main id="content-area">
-
-  <section class="content-section" id="sec-h1">
-    <h2 class="section-heading">📜 历史价值</h2>
-    <h3 class="section-sub">皇权象征</h3>
-    <div class="section-body">太和殿采用的重檐庑殿顶是中国古建筑屋顶等级制度的顶端，非皇家最高正殿不得使用。这一形制在礼制层面直接彰显天子"奉天承运"的权威——屋顶越宏大复杂，代表其使用者的地位越高。太和殿因此成为整个紫禁城乃至全国建筑等级秩序的最高物质表达。</div>
-  </section>
-  <section class="content-section" id="sec-h2">
-    <h3 class="section-sub">礼制建筑体系</h3>
-    <div class="section-body">中国古代官式建筑将屋顶形制划分为严格的等级序列：<strong>重檐庑殿顶</strong>（最高，仅太和殿、太庙等）→ <strong>重檐歇山顶</strong>（天安门、保和殿）→ <strong>单檐庑殿顶</strong>（配殿）→ <strong>单檐歇山顶</strong>（一般殿宇）→ <strong>悬山顶/硬山顶</strong>（民用建筑）。每一级别都有严格的使用规定，僭越者将受到法律处罚。</div>
-  </section>
-  <section class="content-section" id="sec-h3">
-    <h3 class="section-sub">明永乐年间始建</h3>
-    <div class="section-body">太和殿始建于明永乐十八年（1420年），明成祖朱棣迁都北京后将其作为朝会大殿。此后历经三次重大火灾：1557年、1597年、1679年（清康熙年间）三度被毁重建。现存建筑为清康熙三十四年（1695年）重建，距今已有三百余年。每次重建均基本维持原有规制，体现了皇家建筑传统的稳定性。</div>
-  </section>
-  <section class="content-section" id="sec-h4">
-    <h3 class="section-sub">世界文化遗产</h3>
-    <div class="section-body">1987年，故宫博物院被列入《世界文化遗产名录》，成为中国最早列入世遗的建筑遗产之一。故宫占地72万平方米，拥有建筑980余座、房屋8700余间，是世界现存规模最大、保存最完整的古代宫殿建筑群，太和殿是其中规格最高、体量最大的核心建筑。</div>
-  </section>
-
-  <section class="content-section" id="sec-f1">
-    <h2 class="section-heading">🏛️ 形制特征</h2>
-    <h3 class="section-sub">庑殿顶形制</h3>
-    <div class="section-body">庑殿顶又称"四阿顶"，其屋面由前后左右四个斜坡组成，四面皆有坡水，共有五条脊：一条正脊贯穿屋顶两端，加东南、西南、东北、西北四条垂脊。这种四坡五脊的结构使得建筑从任何角度观看都呈现出庄重对称的立面，加之重檐叠加，气势磅礴，是中国木构建筑形制的集大成者。</div>
-  </section>
-  <section class="content-section" id="sec-f2">
-    <h3 class="section-sub">重檐制度</h3>
-    <div class="section-body">重檐是在主体庑殿顶下方再出一圈围廊屋檐（下檐），使整个建筑呈现两层屋檐叠加的形态。下檐通常比主檐出挑更短，坡度更缓，整体效果如同为建筑披上一道宽大的"裙边"。重檐制度不仅增大了屋檐遮雨面积，更通过双层檐口的视觉叠加，大幅提升建筑的体量感与礼仪庄严感。</div>
-  </section>
-  <section class="content-section" id="sec-f3">
-    <h3 class="section-sub">屋脊走兽</h3>
-    <div class="section-body">太和殿四条垂脊上各设有十只走兽，加上前端的骑凤仙人，共11只，是故宫所有建筑中走兽最多的，也是全国之最。走兽从前至后依次为：龙、凤、狮、天马、海马、狻猊、押鱼、獬豸、斗牛、行什。每只走兽均有特定寓意，如龙象征皇权、凤象征吉祥、獬豸象征公正、斗牛象征镇水避火。</div>
-  </section>
-  <section class="content-section" id="sec-f4">
-    <h3 class="section-sub">斗拱出挑比例</h3>
-    <div class="section-body">太和殿外檐斗拱为七踩单翘三昂，出挑尺度达到柱高的三分之一以上。这一比例在历代官式建筑中极为罕见，体现了清代官式大木作的最高规格。斗拱的出挑深度直接决定了屋檐的悬挑长度，太和殿宽达4.49米的檐口出挑，使建筑在雨天可将台基全面遮蔽，兼具功能与美学的高度统一。</div>
-  </section>
-
-  <section class="content-section" id="sec-t1">
-    <h2 class="section-heading">🔧 结构技艺</h2>
-    <h3 class="section-sub">斗拱构造原理</h3>
-    <div class="section-body">斗拱由多种标准化构件组合而成：<strong>栌斗</strong>（坐于柱头的基础斗）→ <strong>华拱</strong>（前后方向出挑的拱）→ <strong>泥道拱</strong>（左右方向的横拱）→ <strong>下昂</strong>（斜向出挑构件，增大悬挑）→ <strong>令拱</strong>（最上层横拱）→ <strong>要头</strong>（出挑端头）。每一构件尺寸均按"材"（基本模数）严格计算，实现了标准化预制与现场装配。</div>
-  </section>
-  <section class="content-section" id="sec-t2">
-    <h3 class="section-sub">大木作体系</h3>
-    <div class="section-body">太和殿采用抬梁式构架：以84根立柱确定平面柱网（面阔11间、进深5间），柱间以额枋连接，柱顶置斗拱，斗拱之上架设大梁，梁上立瓜柱，瓜柱上再架短梁，层层叠加至屋脊。这一"金字塔式"的梁架体系将屋顶数百吨的荷载逐级传递至柱础，最终分散至台基基础。</div>
-  </section>
-  <section class="content-section" id="sec-t3">
-    <h3 class="section-sub">举折屋面曲线</h3>
-    <div class="section-body">太和殿屋面并非平直斜坡，而是一条由檐口向脊部逐渐增大坡度的凹曲线，称为"举折"。具体做法是从下至上每步椽架的举高依次增大，形成下缓上陡的动态曲线。这一设计在实用上有利于加速排水（上部陡坡排水快）、减少下部溅水（下部坡缓水流落点远离墙基），在视觉上则呈现出如翼如翔的飞檐动势。</div>
-  </section>
-  <section class="content-section" id="sec-t4">
-    <h3 class="section-sub">琉璃瓦制作</h3>
-    <div class="section-body">故宫黄色琉璃瓦以优质高岭土为胎体，成型后初次素烧，再施铅基黄色釉料，经约1300℃高温二次烧制而成。釉面致密光滑，防水性能极佳，且在阳光下呈现富贵的金黄色泽，象征皇家专用（黄色为皇帝专用色）。屋脊、吻兽等特殊构件均为专门烧制的异形琉璃件，每件均可精确咬合，确保屋脊严密防水。</div>
-  </section>
-
-  <section id="gallery-section">
-    <h2 class="gallery-title">📷 实景影像</h2>
-    <div class="gallery-grid">
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian1.jpg" alt="宫殿廊道"><div class="caption">宫殿廊道回廊</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian2.jpg" alt="屋脊走兽"><div class="caption">屋脊走兽列阵</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian3.jpg" alt="夜色"><div class="caption">紫禁城夜色</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian4.jpg" alt="宫墙"><div class="caption">朱红宫墙黄琉璃</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian5.jpg" alt="内院"><div class="caption">宫殿院落内景</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian6.jpg" alt="彩绘"><div class="caption">宫殿彩绘木构</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian7.jpg" alt="冬景"><div class="caption">故宫冬日雪景</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian8.jpg" alt="角楼"><div class="caption">角楼护城河倒影</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian9.jpg" alt="全景"><div class="caption">紫禁城全景鸟瞰</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian10.jpg" alt="飞檐"><div class="caption">庑殿顶飞檐细节</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian11.jpg" alt="斗拱"><div class="caption">斗拱层叠结构</div></div>
-      <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian12.jpg" alt="屋顶"><div class="caption">太和殿琉璃瓦屋顶</div></div>
-    </div>
-  </section>
-
-</main>
-</div>
-
-<div id="lightbox" onclick="closeLb()">
-  <span id="lightbox-close" onclick="closeLb()">×</span>
-  <img id="lightbox-img" src="" alt="">
-  <div id="lightbox-caption"></div>
-</div>
-
-<div id="gonghuayan-wrap" style="position:fixed;top:0;right:0;width:350px;height:350px;z-index:9999;pointer-events:auto">
-  <img id="gonghuayan" src="./小红.png" alt="宫华檐">
-  <div id="char-hover-tip" class="char-bubble" style="display:none;top:60px;right:calc(100% + -100px);pointer-events:auto;white-space:normal;width:260px;">
-    你好，我叫宫华檐，快来和我一起了解太和殿庑殿顶吧！
-    <div class="char-q-list">
-      <span class="char-q-item" data-q="0">① 庑殿顶为何是最高等级？</span>
-      <span class="char-q-item" data-q="1">② 太和殿有多少根柱子？</span>
-      <span class="char-q-item" data-q="2">③ 走兽数量代表什么？</span>
-      <span class="char-q-item" data-q="3">④ 斗拱有什么实际功能？</span>
-      <span class="char-q-item" data-q="4">⑤ 琉璃瓦为何是黄色的？</span>
-      <span class="char-q-item" data-q="5">⑥ 屋面曲线怎么形成的？</span>
-    </div>
-    <div id="ai-chat-area">
-      <div id="ai-input-row">
-        <textarea id="ai-user-input" placeholder="问我任何关于古建筑的问题…" rows="1"></textarea>
-        <button id="ai-send-btn">发送</button>
+      <div class="kg-cat open" id="cat-history">
+        <div class="kg-cat-hd" onclick="toggleCat('cat-history')"><span>📜 历史价值</span><span class="arrow">▶</span></div>
+        <div class="kg-items">
+          <div class="kg-item" onclick="navTo('sec-h1','皇权象征——太和殿重檐庑殿顶是中国古建筑屋顶等级制度中的最高形制，象征天子至高无上的权威。')">皇权象征</div>
+          <div class="kg-item" onclick="navTo('sec-h2','礼制体系——古代建筑屋顶从高到低分为庑殿、歇山、悬山、硬山四大类，每类又分重檐与单檐，形成严密等级秩序。')">礼制建筑体系
+          </div>
+          <div class="kg-item" onclick="navTo('sec-h3','明永乐肇建——太和殿始建于明永乐十八年（1420年），历经多次火灾重建，现存建筑为清康熙三十四年重建。')">明永乐年间始建
+          </div>
+          <div class="kg-item" onclick="navTo('sec-h4','世界文化遗产——故宫于1987年被列入联合国教科文组织世界文化遗产名录，是全球最大规模的宫殿建筑群。')">世界文化遗产
+          </div>
+        </div>
       </div>
-      <div id="ai-response-area"></div>
+
+      <div class="kg-cat" id="cat-form">
+        <div class="kg-cat-hd" onclick="toggleCat('cat-form')"><span>🏛️ 形制特征</span><span class="arrow">▶</span></div>
+        <div class="kg-items">
+          <div class="kg-item" onclick="navTo('sec-f1','庑殿顶形制——四坡五脊，四面均为斜坡屋面，正脊一条加四条垂脊，整体造型庄重对称，气势恢宏。')">庑殿顶形制</div>
+          <div class="kg-item" onclick="navTo('sec-f2','重檐制度——重檐庑殿顶在单层屋檐之下再加一圈围廊屋檐，双层叠加使建筑体量更加宏大，等级高于单檐。')">重檐制度</div>
+          <div class="kg-item" onclick="navTo('sec-f3','屋脊走兽——太和殿正脊两端有吻兽，四条垂脊各有十只走兽，是全国走兽数量最多的建筑，象征至高皇权。')">屋脊走兽</div>
+          <div class="kg-item" onclick="navTo('sec-f4','斗拱出挑——太和殿斗拱层数多达七踩，出挑深远，既支撑宽大屋檐，又形成建筑立面最具特色的装饰层带。')">斗拱出挑比例</div>
+        </div>
+      </div>
+
+      <div class="kg-cat" id="cat-tech">
+        <div class="kg-cat-hd" onclick="toggleCat('cat-tech')"><span>🔧 结构技艺</span><span class="arrow">▶</span></div>
+        <div class="kg-items">
+          <div class="kg-item" onclick="navTo('sec-t1','斗拱构造——由栌斗、华拱、泥道拱、下昂、令拱、要头等构件层叠组合，将屋檐荷载逐级传递至柱头。')">斗拱构造原理</div>
+          <div class="kg-item" onclick="navTo('sec-t2','大木作体系——以柱网确定平面，梁架确定剖面，通过抬梁式构架将屋顶荷载传至柱础，是官式建筑的核心结构逻辑。')">大木作体系
+          </div>
+          <div class="kg-item" onclick="navTo('sec-t3','举折曲线——屋面并非平直斜坡，而是由下至上逐渐增大坡度，形成优美的凹曲线，兼顾排水与美观。')">举折屋面曲线</div>
+          <div class="kg-item" onclick="navTo('sec-t4','琉璃瓦制作——故宫黄色琉璃瓦以高岭土为胎，铅釉为面，1300℃高温烧制，釉面光洁、防水耐久，象征皇家专用。')">琉璃瓦制作
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main id="content-area">
+
+      <section class="content-section" id="sec-h1">
+        <h2 class="section-heading">📜 历史价值</h2>
+        <h3 class="section-sub">皇权象征</h3>
+        <div class="section-body">
+          太和殿采用的重檐庑殿顶是中国古建筑屋顶等级制度的顶端，非皇家最高正殿不得使用。这一形制在礼制层面直接彰显天子"奉天承运"的权威——屋顶越宏大复杂，代表其使用者的地位越高。太和殿因此成为整个紫禁城乃至全国建筑等级秩序的最高物质表达。
+        </div>
+      </section>
+      <section class="content-section" id="sec-h2">
+        <h3 class="section-sub">礼制建筑体系</h3>
+        <div class="section-body">中国古代官式建筑将屋顶形制划分为严格的等级序列：<strong>重檐庑殿顶</strong>（最高，仅太和殿、太庙等）→
+          <strong>重檐歇山顶</strong>（天安门、保和殿）→ <strong>单檐庑殿顶</strong>（配殿）→ <strong>单檐歇山顶</strong>（一般殿宇）→
+          <strong>悬山顶/硬山顶</strong>（民用建筑）。每一级别都有严格的使用规定，僭越者将受到法律处罚。</div>
+      </section>
+      <section class="content-section" id="sec-h3">
+        <h3 class="section-sub">明永乐年间始建</h3>
+        <div class="section-body">
+          太和殿始建于明永乐十八年（1420年），明成祖朱棣迁都北京后将其作为朝会大殿。此后历经三次重大火灾：1557年、1597年、1679年（清康熙年间）三度被毁重建。现存建筑为清康熙三十四年（1695年）重建，距今已有三百余年。每次重建均基本维持原有规制，体现了皇家建筑传统的稳定性。
+        </div>
+      </section>
+      <section class="content-section" id="sec-h4">
+        <h3 class="section-sub">世界文化遗产</h3>
+        <div class="section-body">
+          1987年，故宫博物院被列入《世界文化遗产名录》，成为中国最早列入世遗的建筑遗产之一。故宫占地72万平方米，拥有建筑980余座、房屋8700余间，是世界现存规模最大、保存最完整的古代宫殿建筑群，太和殿是其中规格最高、体量最大的核心建筑。
+        </div>
+      </section>
+
+      <section class="content-section" id="sec-f1">
+        <h2 class="section-heading">🏛️ 形制特征</h2>
+        <h3 class="section-sub">庑殿顶形制</h3>
+        <div class="section-body">
+          庑殿顶又称"四阿顶"，其屋面由前后左右四个斜坡组成，四面皆有坡水，共有五条脊：一条正脊贯穿屋顶两端，加东南、西南、东北、西北四条垂脊。这种四坡五脊的结构使得建筑从任何角度观看都呈现出庄重对称的立面，加之重檐叠加，气势磅礴，是中国木构建筑形制的集大成者。
+        </div>
+      </section>
+      <section class="content-section" id="sec-f2">
+        <h3 class="section-sub">重檐制度</h3>
+        <div class="section-body">
+          重檐是在主体庑殿顶下方再出一圈围廊屋檐（下檐），使整个建筑呈现两层屋檐叠加的形态。下檐通常比主檐出挑更短，坡度更缓，整体效果如同为建筑披上一道宽大的"裙边"。重檐制度不仅增大了屋檐遮雨面积，更通过双层檐口的视觉叠加，大幅提升建筑的体量感与礼仪庄严感。
+        </div>
+      </section>
+      <section class="content-section" id="sec-f3">
+        <h3 class="section-sub">屋脊走兽</h3>
+        <div class="section-body">
+          太和殿四条垂脊上各设有十只走兽，加上前端的骑凤仙人，共11只，是故宫所有建筑中走兽最多的，也是全国之最。走兽从前至后依次为：龙、凤、狮、天马、海马、狻猊、押鱼、獬豸、斗牛、行什。每只走兽均有特定寓意，如龙象征皇权、凤象征吉祥、獬豸象征公正、斗牛象征镇水避火。
+        </div>
+      </section>
+      <section class="content-section" id="sec-f4">
+        <h3 class="section-sub">斗拱出挑比例</h3>
+        <div class="section-body">
+          太和殿外檐斗拱为七踩单翘三昂，出挑尺度达到柱高的三分之一以上。这一比例在历代官式建筑中极为罕见，体现了清代官式大木作的最高规格。斗拱的出挑深度直接决定了屋檐的悬挑长度，太和殿宽达4.49米的檐口出挑，使建筑在雨天可将台基全面遮蔽，兼具功能与美学的高度统一。
+        </div>
+      </section>
+
+      <section class="content-section" id="sec-t1">
+        <h2 class="section-heading">🔧 结构技艺</h2>
+        <h3 class="section-sub">斗拱构造原理</h3>
+        <div class="section-body">斗拱由多种标准化构件组合而成：<strong>栌斗</strong>（坐于柱头的基础斗）→ <strong>华拱</strong>（前后方向出挑的拱）→
+          <strong>泥道拱</strong>（左右方向的横拱）→ <strong>下昂</strong>（斜向出挑构件，增大悬挑）→ <strong>令拱</strong>（最上层横拱）→
+          <strong>要头</strong>（出挑端头）。每一构件尺寸均按"材"（基本模数）严格计算，实现了标准化预制与现场装配。</div>
+      </section>
+      <section class="content-section" id="sec-t2">
+        <h3 class="section-sub">大木作体系</h3>
+        <div class="section-body">
+          太和殿采用抬梁式构架：以84根立柱确定平面柱网（面阔11间、进深5间），柱间以额枋连接，柱顶置斗拱，斗拱之上架设大梁，梁上立瓜柱，瓜柱上再架短梁，层层叠加至屋脊。这一"金字塔式"的梁架体系将屋顶数百吨的荷载逐级传递至柱础，最终分散至台基基础。
+        </div>
+      </section>
+      <section class="content-section" id="sec-t3">
+        <h3 class="section-sub">举折屋面曲线</h3>
+        <div class="section-body">
+          太和殿屋面并非平直斜坡，而是一条由檐口向脊部逐渐增大坡度的凹曲线，称为"举折"。具体做法是从下至上每步椽架的举高依次增大，形成下缓上陡的动态曲线。这一设计在实用上有利于加速排水（上部陡坡排水快）、减少下部溅水（下部坡缓水流落点远离墙基），在视觉上则呈现出如翼如翔的飞檐动势。
+        </div>
+      </section>
+      <section class="content-section" id="sec-t4">
+        <h3 class="section-sub">琉璃瓦制作</h3>
+        <div class="section-body">
+          故宫黄色琉璃瓦以优质高岭土为胎体，成型后初次素烧，再施铅基黄色釉料，经约1300℃高温二次烧制而成。釉面致密光滑，防水性能极佳，且在阳光下呈现富贵的金黄色泽，象征皇家专用（黄色为皇帝专用色）。屋脊、吻兽等特殊构件均为专门烧制的异形琉璃件，每件均可精确咬合，确保屋脊严密防水。
+        </div>
+      </section>
+
+      <section id="gallery-section">
+        <h2 class="gallery-title">📷 实景影像</h2>
+        <div class="gallery-grid">
+          <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian1.jpg" alt="太和殿">
+            <div class="caption">太和殿庑殿顶全貌</div>
+          </div>
+          <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian2.jpg" alt="琉璃瓦">
+            <div class="caption">黄色琉璃瓦屋面</div>
+          </div>
+          <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian3.jpg" alt="屋脊走兽">
+            <div class="caption">屋脊走兽列阵</div>
+          </div>
+          <div class="gallery-item" onclick="openLb(this)"><img src="太和殿庑殿顶/taihedian4.jpg" alt="故宫建筑">
+            <div class="caption">紫禁城宫殿实景</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="lightbox" onclick="closeLb()">
+    <span id="lightbox-close" onclick="closeLb()">×</span>
+    <img id="lightbox-img" src="" alt="">
+    <div id="lightbox-caption"></div>
+  </div>
+
+  <div id="gonghuayan-wrap"
+    style="position:fixed;top:0;right:0;width:350px;height:350px;z-index:9999;pointer-events:auto">
+    <img id="gonghuayan" src="./小红.png" alt="宫华檐">
+    <div id="char-hover-tip" class="char-bubble"
+      style="display:none;top:60px;right:calc(100% + -100px);pointer-events:auto;white-space:normal;width:260px;">
+      你好，我叫宫华檐，快来和我一起了解太和殿庑殿顶吧！
+      <div class="char-q-list">
+        <span class="char-q-item" data-q="0">① 庑殿顶为何是最高等级？</span>
+        <span class="char-q-item" data-q="1">② 太和殿有多少根柱子？</span>
+        <span class="char-q-item" data-q="2">③ 走兽数量代表什么？</span>
+        <span class="char-q-item" data-q="3">④ 斗拱有什么实际功能？</span>
+        <span class="char-q-item" data-q="4">⑤ 琉璃瓦为何是黄色的？</span>
+        <span class="char-q-item" data-q="5">⑥ 屋面曲线怎么形成的？</span>
+      </div>
+      <div id="ai-chat-area">
+        <div id="ai-input-row">
+          <textarea id="ai-user-input" placeholder="问我任何关于古建筑的问题…" rows="1"></textarea>
+          <button id="ai-send-btn">发送</button>
+        </div>
+        <div id="ai-response-area"></div>
+      </div>
+    </div>
+    <div id="char-answer-bubble">
+      <span id="char-answer-text"></span>
+      <span id="char-answer-close">✕ 关闭</span>
+    </div>
+    <div id="char-click-dialog" class="char-bubble" style="display:none;top:60px;right:calc(100% + 12px)">
+      <div>你要走啦？欢迎下次再来找我玩！</div>
+      <div style="margin-top:10px;display:flex;justify-content:center">
+        <a href="index.html"
+          style="display:block;padding:6px 22px;background:linear-gradient(135deg,#c0405a,#e07090);color:white;text-decoration:none;font-size:12px;letter-spacing:3px;text-align:center;font-weight:600;border-radius:20px;border:1.5px solid #c0405a">返
+          回</a>
+      </div>
     </div>
   </div>
-  <div id="char-answer-bubble">
-    <span id="char-answer-text"></span>
-    <span id="char-answer-close">✕ 关闭</span>
-  </div>
-  <div id="char-click-dialog" class="char-bubble" style="display:none;top:60px;right:calc(100% + 12px)">
-    <div>你要走啦？欢迎下次再来找我玩！</div>
-    <div style="margin-top:10px;display:flex;justify-content:center">
-      <a href="紫禁飞檐.html" style="display:block;padding:6px 22px;background:linear-gradient(135deg,#c0405a,#e07090);color:white;text-decoration:none;font-size:12px;letter-spacing:3px;text-align:center;font-weight:600;border-radius:20px;border:1.5px solid #c0405a">返 回</a>
-    </div>
-  </div>
-</div>
 
-<script>
-function toggleCat(id){document.getElementById(id).classList.toggle('open');}
-function navTo(sid,tipText){
-  document.querySelectorAll('.kg-item').forEach(i=>i.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  const t=document.getElementById(sid);
-  if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
-  showMascotMsg(tipText);
-}
-function openLb(el){
-  document.getElementById('lightbox-img').src=el.querySelector('img').src;
-  document.getElementById('lightbox-caption').textContent=(el.querySelector('.caption')||{textContent:''}).textContent;
-  document.getElementById('lightbox').classList.add('active');
-}
-function closeLb(){document.getElementById('lightbox').classList.remove('active');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLb();});
-function showMascotMsg(text){
-  const a=document.getElementById('char-answer-bubble');
-  document.getElementById('char-answer-text').textContent=text;
-  a.style.display='block';
-  setTimeout(()=>{if(a.style.display==='block')a.style.display='none';},6000);
-}
+  <script>
+    function toggleCat(id) { document.getElementById(id).classList.toggle('open'); }
+    function navTo(sid, tipText) {
+      document.querySelectorAll('.kg-item').forEach(i => i.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      const t = document.getElementById(sid);
+      if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showMascotMsg(tipText);
+    }
+    function openLb(el) {
+      document.getElementById('lightbox-img').src = el.querySelector('img').src;
+      document.getElementById('lightbox-caption').textContent = (el.querySelector('.caption') || { textContent: '' }).textContent;
+      document.getElementById('lightbox').classList.add('active');
+    }
+    function closeLb() { document.getElementById('lightbox').classList.remove('active'); }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+    function showMascotMsg(text) {
+      const a = document.getElementById('char-answer-bubble');
+      document.getElementById('char-answer-text').textContent = text;
+      a.style.display = 'block';
+      setTimeout(() => { if (a.style.display === 'block') a.style.display = 'none'; }, 6000);
+    }
 
-// 宫华檐人物交互 + AI对话
-(function(){
-  const charImg      = document.getElementById('gonghuayan');
-  const hoverTip     = document.getElementById('char-hover-tip');
-  const clickDialog  = document.getElementById('char-click-dialog');
-  const answerBubble = document.getElementById('char-answer-bubble');
-  const answerText   = document.getElementById('char-answer-text');
-  const answerClose  = document.getElementById('char-answer-close');
-  const aiInput      = document.getElementById('ai-user-input');
-  const aiSendBtn    = document.getElementById('ai-send-btn');
-  const aiResponseArea = document.getElementById('ai-response-area');
-  if(!charImg)return;
-  let dialogOpen=false;
+    // 宫华檐人物交互 + AI对话
+    (function () {
+      const charImg = document.getElementById('gonghuayan');
+      const hoverTip = document.getElementById('char-hover-tip');
+      const clickDialog = document.getElementById('char-click-dialog');
+      const answerBubble = document.getElementById('char-answer-bubble');
+      const answerText = document.getElementById('char-answer-text');
+      const answerClose = document.getElementById('char-answer-close');
+      const aiInput = document.getElementById('ai-user-input');
+      const aiSendBtn = document.getElementById('ai-send-btn');
+      const aiResponseArea = document.getElementById('ai-response-area');
+      if (!charImg) return;
+      let dialogOpen = false;
 
-  const SYSTEM_PROMPT='你是宫华檐，一位专注于故宫建筑知识的讲解员。只回答与故宫、太和殿、庑殿顶、斗拱、皇家建筑相关的问题。对于其他话题，礼貌地引导用户回到皇家建筑主题。回答请简洁专业，使用中文，150字以内。';
-  const answers=['庑殿顶四面坡水、五条屋脊，是最复杂的屋顶形制，从礼制上代表"天"的完整性，只有天子居所才可使用。','太和殿共有72根大柱，其中内柱36根、外柱36根，金丝楠木制成，撑起了这座面阔11间、进深5间的宏大殿堂。','走兽数量越多代表建筑等级越高。太和殿10只垂脊走兽是故宫之最，反映了太和殿作为皇权最高殿堂的至尊地位。','斗拱兼具结构和装饰双重功能：结构上将屋顶荷载逐级传递至柱头，同时悬挑出宽大屋檐；装饰上形成立面最具特色的重复韵律层带。','黄色为皇帝专用色，代表"中央、土德、至尊"。故宫黄色琉璃瓦以铅基黄釉烧制，釉色金黄，象征皇权的至高与永恒。','从檐口至屋脊，每步椽架举高逐渐增大，形成"下缓上陡"的凹曲线，称为举折，使屋面兼顾排水效率与"如翼斯飞"的视觉动势。'];
+      const SYSTEM_PROMPT = '你是宫华檐，一位专注于故宫建筑知识的讲解员。只回答与故宫、太和殿、庑殿顶、斗拱、皇家建筑相关的问题。对于其他话题，礼貌地引导用户回到皇家建筑主题。回答请简洁专业，使用中文，150字以内。';
+      const answers = ['庑殿顶四面坡水、五条屋脊，是最复杂的屋顶形制，从礼制上代表"天"的完整性，只有天子居所才可使用。', '太和殿共有72根大柱，其中内柱36根、外柱36根，金丝楠木制成，撑起了这座面阔11间、进深5间的宏大殿堂。', '走兽数量越多代表建筑等级越高。太和殿10只垂脊走兽是故宫之最，反映了太和殿作为皇权最高殿堂的至尊地位。', '斗拱兼具结构和装饰双重功能：结构上将屋顶荷载逐级传递至柱头，同时悬挑出宽大屋檐；装饰上形成立面最具特色的重复韵律层带。', '黄色为皇帝专用色，代表"中央、土德、至尊"。故宫黄色琉璃瓦以铅基黄釉烧制，釉色金黄，象征皇权的至高与永恒。', '从檐口至屋脊，每步椽架举高逐渐增大，形成"下缓上陡"的凹曲线，称为举折，使屋面兼顾排水效率与"如翼斯飞"的视觉动势。'];
 
-  charImg.addEventListener('mouseenter',()=>{if(!dialogOpen&&answerBubble.style.display!=='block')hoverTip.style.display='block';});
-  document.getElementById('gonghuayan-wrap').addEventListener('mouseleave',()=>{hoverTip.style.display='none';});
-  charImg.addEventListener('click',(e)=>{
-    e.stopPropagation();
-    hoverTip.style.display='none';answerBubble.style.display='none';
-    dialogOpen=!dialogOpen;clickDialog.style.display=dialogOpen?'block':'none';
-  });
-  document.querySelectorAll('.char-q-item').forEach(function(el){
-    el.addEventListener('click',function(e){
-      e.stopPropagation();hoverTip.style.display='none';
-      answerText.textContent=answers[+el.dataset.q];answerBubble.style.display='block';
-    });
-  });
-  answerClose.addEventListener('click',function(e){e.stopPropagation();answerBubble.style.display='none';});
-  answerBubble.addEventListener('click',e=>e.stopPropagation());
-  [hoverTip,clickDialog].forEach(el=>el.addEventListener('click',e=>e.stopPropagation()));
-  document.addEventListener('click',()=>{
-    if(dialogOpen){dialogOpen=false;clickDialog.style.display='none';}
-    if(answerBubble.style.display==='block')answerBubble.style.display='none';
-  });
+      charImg.addEventListener('mouseenter', () => { if (!dialogOpen && answerBubble.style.display !== 'block') hoverTip.style.display = 'block'; });
+      document.getElementById('gonghuayan-wrap').addEventListener('mouseleave', () => { hoverTip.style.display = 'none'; });
+      charImg.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hoverTip.style.display = 'none'; answerBubble.style.display = 'none';
+        dialogOpen = !dialogOpen; clickDialog.style.display = dialogOpen ? 'block' : 'none';
+      });
+      document.querySelectorAll('.char-q-item').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+          e.stopPropagation(); hoverTip.style.display = 'none';
+          answerText.textContent = answers[+el.dataset.q]; answerBubble.style.display = 'block';
+        });
+      });
+      answerClose.addEventListener('click', function (e) { e.stopPropagation(); answerBubble.style.display = 'none'; });
+      answerBubble.addEventListener('click', e => e.stopPropagation());
+      [hoverTip, clickDialog].forEach(el => el.addEventListener('click', e => e.stopPropagation()));
+      document.addEventListener('click', () => {
+        if (dialogOpen) { dialogOpen = false; clickDialog.style.display = 'none'; }
+        if (answerBubble.style.display === 'block') answerBubble.style.display = 'none';
+      });
 
-  async function sendAiMessage(){
-    const question=aiInput.value.trim();if(!question)return;
-    aiInput.value='';aiSendBtn.disabled=true;
-    aiResponseArea.textContent='思考中';aiResponseArea.classList.add('ai-loading');
-    try{
-      const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:question}],systemPrompt:SYSTEM_PROMPT})});
-      const data=await res.json();
-      aiResponseArea.textContent=data.answer||'暂时无法回答，请稍后再试。';
-    }catch{aiResponseArea.textContent='网络错误，请稍后重试。';}
-    aiResponseArea.classList.remove('ai-loading');aiSendBtn.disabled=false;
-  }
-  aiSendBtn.addEventListener('click',function(e){e.stopPropagation();sendAiMessage();});
-  aiInput.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAiMessage();}});
-  aiInput.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px';});
-})();
-</script>
+      async function sendAiMessage() {
+        const question = aiInput.value.trim(); if (!question) return;
+        aiInput.value = ''; aiSendBtn.disabled = true;
+        aiResponseArea.textContent = '思考中'; aiResponseArea.classList.add('ai-loading');
+        try {
+          const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: question }], systemPrompt: SYSTEM_PROMPT }) });
+          const data = await res.json();
+          aiResponseArea.textContent = data.answer || '暂时无法回答，请稍后再试。';
+        } catch { aiResponseArea.textContent = '网络错误，请稍后重试。'; }
+        aiResponseArea.classList.remove('ai-loading'); aiSendBtn.disabled = false;
+      }
+      aiSendBtn.addEventListener('click', function (e) { e.stopPropagation(); sendAiMessage(); });
+      aiInput.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAiMessage(); } });
+      aiInput.addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 80) + 'px'; });
+    })();
+  </script>
 </body>
+
 </html>
