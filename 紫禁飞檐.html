@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紫禁飞檐 — 太和殿庑殿顶信息可视化</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:linear-gradient(160deg,#fbdde0 0%,#fce8ea 40%,#f8d5d8 70%,#fbdde0 100%);font-family:'Noto Serif SC','SimSun',serif;color:#3a1520;min-height:100vh;overflow-x:hidden}
+.butterfly{position:fixed;pointer-events:none;z-index:9998;opacity:.65}
+.b1{top:8%;left:4%;animation:fl1 12s infinite ease-in-out}
+.b2{top:18%;right:6%;animation:fl2 15s infinite ease-in-out 2s}
+.b3{top:55%;left:2%;animation:fl1 10s infinite ease-in-out 4s}
+.b4{top:65%;right:4%;animation:fl2 13s infinite ease-in-out 1s}
+.b5{top:35%;left:12%;animation:fl1 11s infinite ease-in-out 3s}
+.b6{top:42%;right:18%;animation:fl2 14s infinite ease-in-out 5s}
+.b7{top:22%;left:38%;animation:fl1 9s infinite ease-in-out 1.5s}
+.b8{top:72%;left:28%;animation:fl2 16s infinite ease-in-out 6s}
+.b9{top:82%;right:12%;animation:fl1 11s infinite ease-in-out 2.5s}
+.b10{top:12%;right:28%;animation:fl2 13s infinite ease-in-out 7s}
+.b11{top:48%;left:50%;animation:fl1 12s infinite ease-in-out 3.5s}
+.b12{top:90%;left:55%;animation:fl2 10s infinite ease-in-out 8s}
+.b13{top:30%;right:35%;animation:fl1 14s infinite ease-in-out 4.5s}
+.b14{top:60%;right:40%;animation:fl2 11s infinite ease-in-out 9s}
+.b15{top:5%;left:55%;animation:fl1 13s infinite ease-in-out 6s}
+@keyframes fl1{0%,100%{transform:translate(0,0) rotate(-5deg)}30%{transform:translate(40px,-30px) rotate(10deg)}60%{transform:translate(-20px,-50px) rotate(-8deg)}}
+@keyframes fl2{0%,100%{transform:translate(0,0) rotate(5deg)}25%{transform:translate(-35px,-25px) rotate(-12deg)}55%{transform:translate(25px,-45px) rotate(8deg)}}
+.card{background:rgba(255,255,255,.82);border:1px solid rgba(200,80,100,.18);border-radius:12px;backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(200,80,100,.08)}
+.sec-title{font-size:11px;letter-spacing:3px;color:#c0405a;text-transform:uppercase;border-bottom:1px solid rgba(200,80,100,.2);padding-bottom:6px;margin-bottom:12px}
+.sec-zh{font-size:15px;font-weight:600;color:#8b2040;letter-spacing:2px;display:block;margin-bottom:2px}
+#tooltip{position:fixed;z-index:9999;pointer-events:none;opacity:0;transition:opacity .15s;max-width:260px;min-width:160px;background:rgba(255,245,247,.97);border:1px solid #c0405a;border-radius:10px;padding:12px 14px;backdrop-filter:blur(20px);box-shadow:0 0 24px rgba(200,80,100,.25);color:#3a1520;font-size:12px;line-height:1.7}
+#tooltip .tt-title{font-size:14px;font-weight:600;color:#c0405a;margin-bottom:6px;letter-spacing:1px}
+.hoverable{cursor:pointer;transition:all .2s}
+.hoverable:hover{filter:brightness(.92) drop-shadow(0 0 6px rgba(200,80,100,.5))}
+.fade-in{animation:fadeIn .8s ease forwards;opacity:0}
+@keyframes fadeIn{to{opacity:1}}
+.text-block{background:rgba(200,80,100,.06);border-left:2px solid #c0405a;border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:8px;font-size:12px;line-height:1.8;color:#5a2030}
+.text-block .label{color:#c0405a;font-size:11px;letter-spacing:2px;font-weight:600;display:block;margin-bottom:4px}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#fbdde0}::-webkit-scrollbar-thumb{background:#c0405a;border-radius:2px}
+#gonghuayan{transition:filter .35s ease;cursor:pointer}
+#gonghuayan:hover{filter:drop-shadow(0 0 10px rgba(255,255,255,.95)) drop-shadow(0 0 22px rgba(255,255,255,.7)) drop-shadow(0 0 4px rgba(255,200,220,.8))}
+.char-bubble{position:absolute;background:rgba(255,245,247,.97);border:1.5px solid #c0405a;border-radius:14px;padding:10px 16px;font-size:13px;color:#8b2040;white-space:nowrap;box-shadow:0 4px 22px rgba(200,80,100,.22);z-index:10000;letter-spacing:.5px;line-height:1.6}
+.char-bubble::after{content:'';position:absolute;right:-9px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:9px solid #c0405a}
+.char-bubble::before{content:'';position:absolute;right:-7px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:8px solid rgba(255,245,247,.97);z-index:1}
+/* 问题列表 */
+.char-q-list{margin-top:8px;border-top:1px solid rgba(192,64,90,.3);padding-top:8px;display:flex;flex-direction:column;gap:5px;}
+.char-q-item{font-size:12px;color:#c0405a;cursor:pointer;padding:3px 6px;border-radius:6px;transition:background .15s,color .15s;pointer-events:auto;line-height:1.5;white-space:normal;}
+.char-q-item:hover{background:rgba(192,64,90,.12);color:#8b2040;}
+/* 答案气泡 */
+#char-answer-bubble{position:absolute;background:rgba(255,245,247,.97);border:1.5px solid #c0405a;border-radius:14px;padding:12px 16px;font-size:13px;color:#8b2040;white-space:normal;box-shadow:0 4px 22px rgba(200,80,100,.22);z-index:10001;letter-spacing:.5px;line-height:1.7;width:240px;display:none;top:60px;right:calc(100% + 12px);}
+#char-answer-bubble::after{content:'';position:absolute;right:-9px;top:18px;border:5px solid transparent;border-left-color:rgba(255,245,247,.97);}
+#char-answer-bubble::before{content:'';position:absolute;right:-11px;top:17px;border:6px solid transparent;border-left-color:#c0405a;}
+#char-answer-close{display:block;margin-top:10px;font-size:11px;color:#c0405a;cursor:pointer;text-align:right;pointer-events:auto;}
+#char-answer-close:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<!-- Butterflies: 10只 #ec809a + 5只 #e395cf -->
+<svg class="butterfly b1"  width="36" height="28" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".85"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".85"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".6"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".6"/></svg>
+<svg class="butterfly b2"  width="30" height="24" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".8"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".8"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".55"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".55"/></svg>
+<svg class="butterfly b3"  width="28" height="22" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".75"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".75"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".5"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".5"/></svg>
+<svg class="butterfly b4"  width="32" height="26" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".8"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".8"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".6"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".6"/></svg>
+<svg class="butterfly b5"  width="26" height="20" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".7"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".7"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".5"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".5"/></svg>
+<svg class="butterfly b6"  width="34" height="27" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".75"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".75"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".5"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".5"/></svg>
+<svg class="butterfly b7"  width="22" height="18" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".65"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".65"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".45"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".45"/></svg>
+<svg class="butterfly b8"  width="30" height="24" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".8"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".8"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".55"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".55"/></svg>
+<svg class="butterfly b9"  width="28" height="22" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".7"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".7"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".5"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".5"/></svg>
+<svg class="butterfly b10" width="24" height="19" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#ec809a" opacity=".75"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#ec809a" opacity=".75"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#ec809a" opacity=".5"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#ec809a" opacity=".5"/></svg>
+<svg class="butterfly b11" width="32" height="25" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#e395cf" opacity=".8"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#e395cf" opacity=".8"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#e395cf" opacity=".55"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#e395cf" opacity=".55"/></svg>
+<svg class="butterfly b12" width="26" height="21" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#e395cf" opacity=".75"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#e395cf" opacity=".75"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#e395cf" opacity=".5"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#e395cf" opacity=".5"/></svg>
+<svg class="butterfly b13" width="30" height="23" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#e395cf" opacity=".7"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#e395cf" opacity=".7"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#e395cf" opacity=".48"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#e395cf" opacity=".48"/></svg>
+<svg class="butterfly b14" width="28" height="22" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#e395cf" opacity=".8"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#e395cf" opacity=".8"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#e395cf" opacity=".55"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#e395cf" opacity=".55"/></svg>
+<svg class="butterfly b15" width="34" height="26" viewBox="0 0 36 28"><path d="M18 14 C10 6 0 2 2 10 C4 16 12 16 18 14Z" fill="#e395cf" opacity=".72"/><path d="M18 14 C26 6 36 2 34 10 C32 16 24 16 18 14Z" fill="#e395cf" opacity=".72"/><path d="M18 14 C10 20 2 26 4 20 C6 16 14 15 18 14Z" fill="#e395cf" opacity=".5"/><path d="M18 14 C26 20 34 26 32 20 C30 16 22 15 18 14Z" fill="#e395cf" opacity=".5"/></svg>
+
+<!-- HEADER -->
+<header class="relative w-full fade-in" style="background:linear-gradient(180deg,rgba(240,180,190,.6) 0%,rgba(252,220,225,.95) 100%);border-bottom:1px solid rgba(200,80,100,.2);padding:28px 48px 24px;overflow:visible;position:relative;z-index:1000">
+  <div class="flex items-center justify-between relative z-10">
+    <div>
+      <div style="font-size:12px;letter-spacing:6px;color:#8b6040;margin-bottom:6px;font-weight:300">FORBIDDEN CITY · IMPERIAL ARCHITECTURE</div>
+      <h1 style="font-size:52px;font-weight:700;background:linear-gradient(135deg,#c0405a,#e07090,#8b6040);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:8px;line-height:1">紫禁飞檐</h1>
+      <div style="font-size:16px;color:#8b4060;letter-spacing:4px;margin-top:8px;font-weight:300">—— 太和殿庑殿顶信息可视化</div>
+      <div style="font-size:11px;color:rgba(140,60,80,.5);letter-spacing:3px;margin-top:6px">TAIHE PALACE · WUDIAN ROOF · DATA VISUALIZATION</div>
+    </div>
+    <div style="position:relative;display:inline-block;height:120px">
+      <svg width="400" height="100" viewBox="0 0 420 110" style="opacity:.3;display:block">
+        <defs><linearGradient id="palGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF69B4"/><stop offset="100%" stop-color="#8B1A4A"/></linearGradient></defs>
+        <rect x="30" y="90" width="360" height="18" fill="url(#palGrad)" rx="2"/>
+        <rect x="50" y="78" width="320" height="14" fill="url(#palGrad)" rx="1"/>
+        <polygon points="210,8 60,72 360,72" fill="url(#palGrad)"/>
+        <polygon points="210,2 110,42 310,42" fill="#FF69B4" opacity=".6"/>
+        <path d="M60,72 Q40,68 30,75" stroke="#FF69B4" stroke-width="2" fill="none"/>
+        <path d="M360,72 Q380,68 390,75" stroke="#FF69B4" stroke-width="2" fill="none"/>
+        <path d="M110,42 Q95,38 85,44" stroke="#FFB6C1" stroke-width="1.5" fill="none"/>
+        <path d="M310,42 Q325,38 335,44" stroke="#FFB6C1" stroke-width="1.5" fill="none"/>
+        <circle cx="210" cy="6" r="4" fill="#C9A84C"/>
+        <rect x="90" y="78" width="8" height="12" fill="#C9A84C" opacity=".5"/>
+        <rect x="160" y="78" width="8" height="12" fill="#C9A84C" opacity=".5"/>
+        <rect x="252" y="78" width="8" height="12" fill="#C9A84C" opacity=".5"/>
+        <rect x="322" y="78" width="8" height="12" fill="#C9A84C" opacity=".5"/>
+      </svg>
+      <!-- 宫华檐 character image -->
+    </div>
+  </div>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#FF69B4,#C9A84C,#FF69B4,transparent)"></div>
+</header>
+<div id="gonghuayan-wrap" style="position:fixed;top:0;right:0;width:350px;height:350px;z-index:9999;pointer-events:auto">
+  <img id="gonghuayan" src="./小红.png" alt="宫华檐"
+       style="position:absolute;bottom:0;right:0;height:350px;width:auto;pointer-events:auto">
+  <!-- Hover bubble -->
+  <div id="char-hover-tip" class="char-bubble" style="display:none;top:60px;right:calc(100% + -100px);pointer-events:auto;white-space:normal;width:240px;">
+    你好，我叫宫华檐，快来和我一起了解太和殿庑殿顶吧！
+    <div class="char-q-list">
+      <span class="char-q-item" data-q="0">① 太和殿采用什么屋顶形制？</span>
+      <span class="char-q-item" data-q="1">② 庑殿顶结构长什么样？</span>
+      <span class="char-q-item" data-q="2">③ 重檐庑殿顶代表什么等级？</span>
+      <span class="char-q-item" data-q="3">④ 民间可以建造庑殿顶吗？</span>
+      <span class="char-q-item" data-q="4">⑤ 庑殿顶有什么象征寓意？</span>
+      <span class="char-q-item" data-q="5">⑥ 重檐和单檐有什么区别？</span>
+    </div>
+  </div>
+  <!-- 答案气泡 -->
+  <div id="char-answer-bubble">
+    <span id="char-answer-text"></span>
+    <span id="char-answer-close">✕ 关闭</span>
+  </div>
+  <!-- Click dialog -->
+  <div id="char-click-dialog" class="char-bubble" style="display:none;top:60px;right:calc(100% + 12px)">
+    <div>你要走啦？欢迎下次再来找我玩！</div>
+    <div style="margin-top:10px;display:flex;justify-content:center">
+      <div style="border:1.5px solid #c0405a;border-radius:6px;overflow:hidden;box-shadow:0 2px 8px rgba(200,80,100,.2)">
+        <a href="index.html" style="display:block;padding:6px 22px;background:linear-gradient(135deg,#c0405a,#e07090);color:white;text-decoration:none;font-size:12px;letter-spacing:3px;text-align:center;font-weight:600">返 回</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<main style="padding:14px 18px;position:relative;z-index:1;display:flex;flex-direction:column;gap:14px">
+
+<!-- TOP ROW: left (28%) + center (72%) -->
+<div style="display:grid;grid-template-columns:28% 1fr;gap:14px">
+
+<!-- LEFT: bar chart + sankey -->
+<div style="display:flex;flex-direction:column;gap:12px">
+  <div class="card fade-in" style="padding:16px;animation-delay:.2s">
+    <div class="sec-title"><span class="sec-zh">建筑部件</span>Building Component</div>
+    <div style="position:relative;height:260px"><canvas id="barChart"></canvas></div>
+    <div style="display:flex;gap:16px;margin-top:8px;justify-content:center">
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#5a2030"><div style="width:12px;height:12px;background:#c0405a;border-radius:2px"></div>重要程度</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#5a2030"><div style="width:12px;height:12px;background:#e08090;border-radius:2px;opacity:.7"></div>数量</div>
+    </div>
+  </div>
+  <div class="card fade-in" style="padding:16px;animation-delay:.4s;flex:1">
+    <div class="sec-title"><span class="sec-zh">檐角脊兽</span>Eave Ridge Beast</div>
+    <svg id="leftSankey" width="100%" height="320" viewBox="0 0 280 320" style="overflow:visible">
+      <defs>
+        <linearGradient id="sg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#c0405a" stop-opacity=".6"/><stop offset="100%" stop-color="#8b2040" stop-opacity=".3"/></linearGradient>
+        <linearGradient id="sg2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#e08090" stop-opacity=".6"/><stop offset="100%" stop-color="#8b6040" stop-opacity=".3"/></linearGradient>
+      </defs>
+      <g id="beastNodes"></g><g id="sankeyPaths"></g><g id="catNodes"></g>
+    </svg>
+  </div>
+</div>
+
+<!-- CENTER: dougong + text + side views -->
+<div style="display:flex;flex-direction:column;gap:12px">
+  <div class="card fade-in" style="padding:16px;animation-delay:.3s">
+    <div class="sec-title"><span class="sec-zh">斗拱结构解析</span>Dougong Structure</div>
+    <svg width="100%" viewBox="0 0 560 300" style="overflow:visible">
+      <defs><linearGradient id="woodGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8B4513"/><stop offset="100%" stop-color="#5C2D0A"/></linearGradient></defs>
+      <rect x="180" y="270" width="120" height="16" fill="#3a1a08" rx="2"/>
+      <rect x="218" y="200" width="24" height="72" fill="url(#woodGrad)" rx="2" class="hoverable" data-tip="檐柱" data-desc="外廊立柱，支撑屋檐的主要承重构件，直径粗大，以红漆涂饰，是建筑外观的重要组成部分。"/>
+      <rect x="100" y="196" width="280" height="10" fill="#6B3410" rx="2" class="hoverable" data-tip="阑额" data-desc="柱间横向联系构件，位于柱头之间，起到拉结各柱、传递荷载的作用，是斗拱的承托基础。"/>
+      <rect x="210" y="180" width="40" height="18" fill="#7a3d12" rx="3" class="hoverable" data-tip="栌斗" data-desc="斗拱最底部的大斗，直接坐于柱头之上，是整组斗拱的基础构件，承受上部全部荷载。"/>
+      <rect x="170" y="168" width="120" height="12" fill="#8B4513" rx="3" class="hoverable" data-tip="泥道拱" data-desc="斗拱中与建筑立面平行的横向拱形构件，位于栌斗之上，是斗拱横向传力的关键构件。"/>
+      <rect x="140" y="155" width="200" height="11" fill="#9B5523" rx="3" class="hoverable" data-tip="第一跳华拱" data-desc="斗拱第一层向外伸出的拱形构件，垂直于建筑立面方向，将荷载向外传递，增大出挑距离。"/>
+      <rect x="110" y="142" width="260" height="11" fill="#AB6533" rx="3" class="hoverable" data-tip="第二跳华拱" data-desc="斗拱第二层向外伸出的拱形构件，在第一跳基础上进一步扩大出挑，体现斗拱层层叠出的结构特征。"/>
+      <line x1="100" y1="130" x2="240" y2="155" stroke="#C9A84C" stroke-width="8" stroke-linecap="round" class="hoverable" data-tip="下昂" data-desc="斜向向下伸出的构件，利用杠杆原理平衡屋顶荷载，是宋式斗拱的重要特征，能有效增大出挑距离。"/>
+      <rect x="80" y="118" width="320" height="10" fill="#BB7543" rx="3" class="hoverable" data-tip="令拱" data-desc="斗拱中最外层的横向拱形构件，位于斗拱出跳的最前端，直接承托撩檐枋，是斗拱与屋檐的连接构件。"/>
+      <polygon points="60,108 90,108 80,118 70,118" fill="#C9A84C" class="hoverable" data-tip="要头" data-desc="斗拱最外端的装饰性构件，形如蚂蚱头，既有结构功能又具装饰效果，是斗拱艺术性的重要体现。"/>
+      <polygon points="420,108 390,108 400,118 410,118" fill="#C9A84C" class="hoverable" data-tip="要头" data-desc="斗拱最外端的装饰性构件，形如蚂蚱头，既有结构功能又具装饰效果，是斗拱艺术性的重要体现。"/>
+      <line x1="60" y1="108" x2="30" y2="80" stroke="#8B4513" stroke-width="5" stroke-linecap="round" class="hoverable" data-tip="榱木（椽木）" data-desc="屋顶斜向排列的细长木条，直接承托屋面瓦件，是屋顶结构的基本构件，密集排列形成屋面骨架。"/>
+      <line x1="420" y1="108" x2="450" y2="80" stroke="#8B4513" stroke-width="5" stroke-linecap="round" class="hoverable" data-tip="榱木（椽木）" data-desc="屋顶斜向排列的细长木条，直接承托屋面瓦件，是屋顶结构的基本构件，密集排列形成屋面骨架。"/>
+      <rect x="195" y="130" width="90" height="8" fill="#6B3410" rx="2" class="hoverable" data-tip="草乳栿" data-desc="短小的横向承重构件，连接内外结构体系，位于斗拱内侧，是内外柱之间的重要联系构件。"/>
+      <line x1="240" y1="155" x2="300" y2="125" stroke="#C9A84C" stroke-width="6" stroke-linecap="round" stroke-dasharray="4,2" class="hoverable" data-tip="昂后尾" data-desc="斜向构件昂的后端，伸入室内，通过杠杆原理平衡前端出挑荷载，是昂式斗拱力学智慧的核心所在。"/>
+      <rect x="100" y="105" width="280" height="8" fill="#5C2D0A" rx="2" class="hoverable" data-tip="压槽坊" data-desc="位于斗拱最上层的横向构件，承托屋顶荷载并将其传递至斗拱，是斗拱与屋顶结构的连接枢纽。"/>
+      <path d="M 195 165 Q 240 155 285 165" stroke="#C9A84C" stroke-width="4" fill="none" class="hoverable" data-tip="明月梁" data-desc="弯曲如月的装饰性梁，形态优美，既有结构功能又具极高的艺术价值，体现中国古建筑结构与美学的完美统一。"/>
+      <g fill="rgba(100,40,60,.65)" font-size="9">
+        <text x="435" y="275">檐柱</text><text x="435" y="200">阑额</text><text x="435" y="185">栌斗</text>
+        <text x="435" y="172">泥道拱</text><text x="435" y="158">第一跳华拱</text><text x="435" y="145">第二跳华拱</text>
+        <text x="435" y="133">下昂</text><text x="435" y="120">令拱</text><text x="435" y="108">要头</text><text x="435" y="95">压槽坊</text>
+      </g>
+      <g stroke="rgba(200,80,100,.25)" stroke-width=".5" fill="none">
+        <line x1="242" y1="236" x2="433" y2="272"/><line x1="242" y1="200" x2="433" y2="198"/>
+        <line x1="250" y1="185" x2="433" y2="183"/><line x1="250" y1="172" x2="433" y2="170"/>
+        <line x1="340" y1="158" x2="433" y2="156"/><line x1="370" y1="145" x2="433" y2="143"/>
+        <line x1="240" y1="140" x2="433" y2="131"/><line x1="400" y1="120" x2="433" y2="118"/>
+        <line x1="420" y1="108" x2="433" y2="106"/><line x1="380" y1="105" x2="433" y2="93"/>
+      </g>
+    </svg>
+  </div>
+  <div class="card fade-in" style="padding:16px;animation-delay:.5s">
+    <div class="sec-title"><span class="sec-zh">建筑解读</span>Architectural Analysis</div>
+    <div class="text-block hoverable" data-tip="历史价值" data-desc="太和殿始建于明永乐十八年（1420年），历经多次重建，现存建筑为清康熙三十四年（1695年）重建，是中国现存规模最大的木结构建筑。"><span class="label">HISTORY · 历史价值</span>太和殿始建于明永乐十八年（1420年），是中国现存最大的木结构建筑。庑殿顶为中国古建筑最高等级屋顶形式，仅用于最重要的皇家建筑。</div>
+    <div class="text-block hoverable" data-tip="形制规格" data-desc="太和殿重檐庑殿顶，面阔十一间（约63.96米），进深五间（约37.17米），建筑面积约2377平方米，台基高8.13米，通高35.05米。"><span class="label">FORM · 形制</span>重檐庑殿顶，面阔十一间，进深五间。上层檐斗拱为七踩单翘双昂，下层为五踩单翘单昂，屋脊上共有10个脊兽（最高等级）。</div>
+    <div class="text-block hoverable" data-tip="结构智慧" data-desc="斗拱作为柱与屋顶之间的过渡构件，通过层层叠出分散屋顶荷载。榫卯结构无需钉子，依靠木构件相互咬合，具有良好的抗震性能。"><span class="label">STRUCTURE · 结构</span>斗拱作为柱与屋顶之间的过渡构件，分散屋顶荷载。榫卯结构无需钉子，依靠木构件相互咬合。飞檐翘角通过特殊的角梁结构实现。</div>
+    <div class="text-block hoverable" data-tip="美学意境" data-desc="「如翚斯飞」出自《诗经》，形容屋顶如雉鸟展翅飞翔，生动描绘了中国古建筑飞檐翘角的优美姿态。金黄琉璃瓦与朱红墙体的色彩对比，彰显皇家威仪。"><span class="label">AESTHETICS · 美学</span>金黄色琉璃瓦与朱红色墙体形成强烈视觉对比。飞檐曲线优美，体现「如翚斯飞」的诗意意境。脊兽排列有序，数量等级严格，彰显皇家威仪。</div>
+  </div>
+  <div class="card fade-in" style="padding:16px;animation-delay:.6s;position:relative;z-index:9999">
+    <div class="sec-title"><span class="sec-zh">剖面尺寸</span>Section Dimensions</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <svg viewBox="-10 0 220 165" width="100%" class="hoverable" data-tip="正立面剖面" data-desc="太和殿正立面剖面图，总宽约63.96米（面阔十一间），台基高8.13米，通高35.05米，上下两层檐形成重檐庑殿顶的壮观形制。">
+        <defs><linearGradient id="sideGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c0405a" stop-opacity=".6"/><stop offset="100%" stop-color="#8b2040" stop-opacity=".2"/></linearGradient></defs>
+        <rect x="20" y="130" width="160" height="20" fill="#3a1a08" rx="1"/><rect x="30" y="118" width="140" height="14" fill="#4a2010" rx="1"/>
+        <polygon points="100,30 30,90 170,90" fill="url(#sideGrad)"/>
+        <polygon points="100,20 55,58 145,58" fill="#c0405a" opacity=".5"/>
+        <path d="M30,90 Q15,86 10,94" stroke="#c0405a" stroke-width="1.5" fill="none"/>
+        <path d="M170,90 Q185,86 190,94" stroke="#c0405a" stroke-width="1.5" fill="none"/>
+        <line x1="8" y1="20" x2="8" y2="130" stroke="rgba(200,80,100,.4)" stroke-width=".5" stroke-dasharray="2,2"/>
+        <line x1="6" y1="20" x2="10" y2="20" stroke="#c0405a" stroke-width=".8"/><line x1="6" y1="130" x2="10" y2="130" stroke="#c0405a" stroke-width=".8"/>
+        <text x="4" y="78" fill="#8b6040" font-size="7" text-anchor="middle" transform="rotate(-90,4,78)">4200</text>
+        <line x1="30" y1="148" x2="170" y2="148" stroke="rgba(200,80,100,.4)" stroke-width=".5" stroke-dasharray="2,2"/>
+        <text x="100" y="156" fill="#8b6040" font-size="7" text-anchor="middle">1700</text>
+      </svg>
+      <svg viewBox="0 0 210 165" width="100%" class="hoverable" data-tip="侧立面剖面" data-desc="太和殿侧立面剖面图，进深五间约37.17米，斗拱出挑深度约1.02米，下层檐高约866mm，上层檐高约998mm，比例严谨，体现宋《营造法式》的规制。">
+        <defs><linearGradient id="sideGrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e08090" stop-opacity=".6"/><stop offset="100%" stop-color="#8b2040" stop-opacity=".2"/></linearGradient></defs>
+        <rect x="20" y="130" width="160" height="20" fill="#3a1a08" rx="1"/><rect x="30" y="118" width="140" height="14" fill="#4a2010" rx="1"/>
+        <polygon points="100,35 35,90 165,90" fill="url(#sideGrad2)"/>
+        <polygon points="100,25 60,60 140,60" fill="#e08090" opacity=".5"/>
+        <path d="M35,90 Q20,86 15,94" stroke="#e08090" stroke-width="1.5" fill="none"/>
+        <path d="M165,90 Q180,86 185,94" stroke="#e08090" stroke-width="1.5" fill="none"/>
+        <line x1="190" y1="60" x2="190" y2="90" stroke="rgba(200,80,100,.4)" stroke-width=".5" stroke-dasharray="2,2"/>
+        <line x1="188" y1="60" x2="192" y2="60" stroke="#e08090" stroke-width=".8"/><line x1="188" y1="90" x2="192" y2="90" stroke="#e08090" stroke-width=".8"/>
+        <text x="196" y="77" fill="#8b6040" font-size="7" text-anchor="middle" transform="rotate(90,196,77)">866</text>
+        <line x1="190" y1="90" x2="190" y2="118" stroke="rgba(200,80,100,.4)" stroke-width=".5" stroke-dasharray="2,2"/>
+        <text x="196" y="106" fill="#8b6040" font-size="7" text-anchor="middle" transform="rotate(90,196,106)">998</text>
+        <line x1="35" y1="148" x2="165" y2="148" stroke="rgba(200,80,100,.4)" stroke-width=".5" stroke-dasharray="2,2"/>
+        <text x="100" y="156" fill="#8b6040" font-size="7" text-anchor="middle">1020</text>
+      </svg>
+    </div>
+  </div>
+</div>
+</div><!-- end top row -->
+
+<!-- BOTTOM ROW: beast wheel | sankey | palace (3 equal columns) -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+
+  <!-- Beast Wheel -->
+  <div class="card fade-in" style="padding:16px;animation-delay:.4s">
+    <div class="sec-title"><span class="sec-zh">脊兽轮盘</span>Ridge Beast Wheel</div>
+    <svg id="beastWheel" width="100%" viewBox="0 0 280 280" style="overflow:visible">
+      <defs>
+        <radialGradient id="wheelGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff0f3"/><stop offset="100%" stop-color="#fce0e5"/></radialGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <circle cx="140" cy="140" r="125" fill="none" stroke="rgba(200,80,100,.12)" stroke-width="1"/>
+      <circle cx="140" cy="140" r="108" fill="none" stroke="rgba(200,80,100,.28)" stroke-width="1.5"/>
+      <circle cx="140" cy="140" r="38" fill="url(#wheelGrad)" stroke="#c0405a" stroke-width="1.5" filter="url(#glow)"/>
+      <text x="140" y="136" text-anchor="middle" fill="#c0405a" font-size="13" font-weight="600">脊兽</text>
+      <text x="140" y="152" text-anchor="middle" fill="#8b4060" font-size="9" letter-spacing="1">Ridge Beast</text>
+    </svg>
+  </div>
+
+  <!-- Right Sankey -->
+  <div class="card fade-in" style="padding:16px;animation-delay:.55s">
+    <div class="sec-title"><span class="sec-zh">象征意义流向</span>Symbolic Meaning Flow</div>
+    <svg id="rightSankey" width="100%" viewBox="0 0 260 300" style="overflow:visible"></svg>
+  </div>
+
+  <!-- Palace Illustration -->
+  <div class="card fade-in" style="padding:16px;animation-delay:.7s">
+    <div class="sec-title"><span class="sec-zh">太和殿庑殿顶</span>Taihe Palace Wudian Roof</div>
+    <svg width="100%" viewBox="0 0 260 160">
+      <defs>
+        <linearGradient id="palPink" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c0405a" stop-opacity=".7"/><stop offset="100%" stop-color="#8b2040" stop-opacity=".4"/></linearGradient>
+        <filter id="palGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect x="10" y="138" width="240" height="16" fill="#3a1a08" rx="2"/>
+      <rect x="20" y="126" width="220" height="14" fill="#4a2010" rx="1"/>
+      <rect x="30" y="116" width="200" height="12" fill="#5a2a14" rx="1"/>
+      <polygon points="130,62 20,108 240,108" fill="url(#palPink)" filter="url(#palGlow)"/>
+      <path d="M20,108 Q5,103 0,112" stroke="#c0405a" stroke-width="2" fill="none"/>
+      <path d="M240,108 Q255,103 260,112" stroke="#c0405a" stroke-width="2" fill="none"/>
+      <polygon points="130,28 55,68 205,68" fill="#c0405a" opacity=".55"/>
+      <path d="M55,68 Q42,64 36,72" stroke="#e08090" stroke-width="1.5" fill="none"/>
+      <path d="M205,68 Q218,64 224,72" stroke="#e08090" stroke-width="1.5" fill="none"/>
+      <rect x="90" y="24" width="80" height="6" fill="#8b6040" rx="1"/>
+      <ellipse cx="90" cy="24" rx="7" ry="10" fill="#8b6040" opacity=".8"/>
+      <ellipse cx="170" cy="24" rx="7" ry="10" fill="#8b6040" opacity=".8"/>
+      <g fill="#8b6040" opacity=".5"><rect x="55" y="116" width="6" height="10" rx="1"/><rect x="100" y="116" width="6" height="10" rx="1"/><rect x="154" y="116" width="6" height="10" rx="1"/><rect x="199" y="116" width="6" height="10" rx="1"/></g>
+      <text x="130" y="155" text-anchor="middle" fill="rgba(100,40,60,.5)" font-size="8" letter-spacing="2">太和殿 · 重檐庑殿顶</text>
+    </svg>
+  </div>
+
+</div><!-- end bottom row -->
+</main>
+
+<!-- Tooltip -->
+<div id="tooltip"><div class="tt-title" id="tt-title"></div><div id="tt-body"></div></div>
+
+<script>
+// ── Tooltip ──────────────────────────────────────────────────────────────────
+const tip = document.getElementById('tooltip');
+const tipTitle = document.getElementById('tt-title');
+const tipBody = document.getElementById('tt-body');
+
+document.querySelectorAll('[data-tip]').forEach(el => {
+  el.addEventListener('mouseenter', e => {
+    tipTitle.textContent = el.dataset.tip;
+    tipBody.textContent = el.dataset.desc || '';
+    tip.style.opacity = '1';
+  });
+  el.addEventListener('mousemove', e => {
+    let x = e.clientX + 14, y = e.clientY - 10;
+    if (x + 270 > window.innerWidth) x = e.clientX - 280;
+    if (y + 120 > window.innerHeight) y = e.clientY - 130;
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+  });
+  el.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
+});
+
+// ── Bar Chart ─────────────────────────────────────────────────────────────────
+const labels = ['正脊','大吻','垂脊','戗脊','正坡','斜坡','上层檐角','脊兽序列','围脊','下层檐脊','下层檐角','斗拱','瓦当','滴水'];
+const importance = [5,5,5,5,5,5,5,4,4,4,4,4,3,3];
+const quantity   = [1,1.4,2,2,1.4,1.4,2,3.8,1,2,2,4.5,10,10];
+
+const barTips = {
+  '正脊':'屋顶最高处的水平屋脊，贯通建筑全长，是庑殿顶的核心构件，两端装饰大吻。',
+  '大吻':'正脊两端的龙形装饰构件，又称鸱吻，高达3.4米，是太和殿等级的重要标志。',
+  '垂脊':'从正脊向下延伸至屋角的斜脊，庑殿顶共有四条垂脊，上排列脊兽。',
+  '戗脊':'重檐庑殿顶下层檐的斜脊，从围脊角部向外延伸，共四条。',
+  '正坡':'屋顶正面（南北向）的坡面，面积最大，铺设金黄色琉璃瓦。',
+  '斜坡':'屋顶斜角方向的坡面，庑殿顶特有的四个斜坡面，形成五脊四坡的形制。',
+  '上层檐角':'重檐庑殿顶上层屋檐的四个翘角，飞檐翘角是中国古建筑的标志性特征。',
+  '脊兽序列':'垂脊上排列的神兽，太和殿共10个，数量为最高等级，象征皇权至上。',
+  '围脊':'重檐庑殿顶上下两层檐之间的水平屋脊，围绕建筑一周。',
+  '下层檐脊':'下层檐的水平屋脊，连接各戗脊，形成下层屋顶的骨架。',
+  '下层檐角':'下层屋檐的四个翘角，与上层檐角共同形成重檐庑殿顶的层次感。',
+  '斗拱':'柱与屋顶之间的过渡构件，太和殿共有斗拱130余朵，是中国古建筑力学与美学的集中体现。',
+  '瓦当':'筒瓦前端的圆形装饰构件，太和殿使用龙纹瓦当，彰显皇家身份。',
+  '滴水':'板瓦前端的滴水瓦，引导雨水滴落，防止雨水侵蚀墙体，兼具功能与装饰。'
+};
+
+const ctx = document.getElementById('barChart').getContext('2d');
+const barChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      { label:'重要程度', data: importance, backgroundColor:'rgba(192,64,90,.72)', borderColor:'#c0405a', borderWidth:1, borderRadius:3 },
+      { label:'数量(归一)', data: quantity, backgroundColor:'rgba(224,128,144,.45)', borderColor:'#e08090', borderWidth:1, borderRadius:3 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor:'rgba(255,245,247,.97)', borderColor:'#c0405a', borderWidth:1,
+        titleColor:'#c0405a', bodyColor:'#3a1520', padding:10,
+        callbacks: {
+          afterBody: (items) => {
+            const lbl = items[0]?.label;
+            return lbl && barTips[lbl] ? ['\n' + barTips[lbl]] : [];
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color:'rgba(90,32,48,.7)', font:{size:8}, maxRotation:45 },
+        grid: { color:'rgba(200,80,100,.1)' }
+      },
+      y: {
+        ticks: { color:'rgba(90,32,48,.7)', font:{size:9} },
+        grid: { color:'rgba(200,80,100,.1)' },
+        max: 11
+      }
+    }
+  }
+});
+
+// ── Beast Wheel ───────────────────────────────────────────────────────────────
+const beasts = [
+  { name:'骑凤仙人', desc:'传说中的仙人骑凤，位于脊端最前，引导神兽队列，象征吉祥如意，超凡脱俗。' },
+  { name:'龙',       desc:'皇权至高象征，能呼风唤雨，镇压邪祟，是皇家建筑的核心神兽。' },
+  { name:'凤',       desc:'百鸟之王，象征祥瑞与皇后之德，与龙合称龙凤，代表阴阳和谐。' },
+  { name:'狮子',     desc:'百兽之王，威严镇守，驱邪避凶，守护宫殿安宁。' },
+  { name:'天马',     desc:'神话中的飞马，象征皇权威仪，可日行千里，传递皇命。' },
+  { name:'海马',     desc:'能入海降龙，象征皇权无所不及，陆海皆可驾驭。' },
+  { name:'狻猊',     desc:'龙之九子之一，形似狮，好烟火，常见于香炉装饰，象征威严。' },
+  { name:'犼',       desc:'好望远，立于高处，象征警觉守护，能辨忠奸。' },
+  { name:'狎鱼',     desc:'海中神兽，能兴云作雨，防火灾，是建筑防火的守护神。' },
+  { name:'獬豸',     desc:'独角神兽，象征公正执法，能辨善恶，是正义的化身。' },
+  { name:'斗牛',     desc:'虬龙之属，能镇水患，保护建筑免受洪涝之灾。' },
+  { name:'行什',     desc:'带翅膀的猴形神兽，手持金刚杵，能防雷击，是建筑的避雷神。' },
+  { name:'垂兽',     desc:'位于垂脊末端，固定脊瓦，防止滑落，兼具结构与装饰功能。' }
+];
+
+const wheel = document.getElementById('beastWheel');
+const cx = 140, cy = 140, r = 95;
+beasts.forEach((b, i) => {
+  const angle = (i / beasts.length) * Math.PI * 2 - Math.PI / 2;
+  const bx = cx + r * Math.cos(angle);
+  const by = cy + r * Math.sin(angle);
+  const isTop = Math.abs(angle + Math.PI/2) < Math.PI/2;
+
+  // Spoke line
+  const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.setAttribute('x1', cx + 38 * Math.cos(angle));
+  line.setAttribute('y1', cy + 38 * Math.sin(angle));
+  line.setAttribute('x2', bx - 14 * Math.cos(angle));
+  line.setAttribute('y2', by - 14 * Math.sin(angle));
+  line.setAttribute('stroke','rgba(200,80,100,.25)');
+  line.setAttribute('stroke-width','0.8');
+  wheel.appendChild(line);
+
+  // Beast circle
+  const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('class','hoverable');
+  g.setAttribute('data-tip', b.name);
+  g.setAttribute('data-desc', b.desc);
+  g.style.cursor = 'pointer';
+
+  const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  circle.setAttribute('cx', bx); circle.setAttribute('cy', by); circle.setAttribute('r','14');
+  circle.setAttribute('fill','rgba(255,240,243,.9)');
+  circle.setAttribute('stroke', i === 0 ? '#8b6040' : '#c0405a');
+  circle.setAttribute('stroke-width','1.2');
+  g.appendChild(circle);
+
+  const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+  text.setAttribute('x', bx); text.setAttribute('y', by + 4);
+  text.setAttribute('text-anchor','middle');
+  text.setAttribute('fill', i === 0 ? '#8b6040' : '#c0405a');
+  text.setAttribute('font-size','8');
+  text.textContent = b.name.length > 3 ? b.name.slice(0,3) : b.name;
+  g.appendChild(text);
+
+  wheel.appendChild(g);
+});
+
+// Re-attach tooltip for dynamically created elements
+document.querySelectorAll('[data-tip]').forEach(el => {
+  if (el._tipBound) return;
+  el._tipBound = true;
+  el.addEventListener('mouseenter', e => {
+    tipTitle.textContent = el.dataset.tip;
+    tipBody.textContent = el.dataset.desc || '';
+    tip.style.opacity = '1';
+  });
+  el.addEventListener('mousemove', e => {
+    let x = e.clientX + 14, y = e.clientY - 10;
+    if (x + 270 > window.innerWidth) x = e.clientX - 280;
+    if (y + 120 > window.innerHeight) y = e.clientY - 130;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  });
+  el.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
+});
+
+// ── Left Sankey (Building components → importance categories) ─────────────────
+(function buildLeftSankey() {
+  const svg = document.getElementById('leftSankey');
+  const nodes = [
+    {name:'正脊/大吻',y:20},{name:'垂脊/戗脊',y:55},{name:'坡面',y:90},
+    {name:'檐角',y:125},{name:'脊兽序列',y:160},{name:'斗拱',y:195},
+    {name:'瓦当/滴水',y:230}
+  ];
+  const cats = [
+    {name:'结构构件',y:60,color:'#c0405a'},{name:'装饰构件',y:140,color:'#8b4060'},
+    {name:'功能构件',y:220,color:'#8b6040'}
+  ];
+  const flows = [
+    [0,0],[1,0],[2,0],[3,1],[4,1],[5,0],[6,2]
+  ];
+
+  // Draw flows
+  flows.forEach(([ni,ci]) => {
+    const n = nodes[ni], c = cats[ci];
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    const x1=80, y1=n.y+8, x2=180, y2=c.y+8;
+    path.setAttribute('d',`M${x1},${y1} C${(x1+x2)/2},${y1} ${(x1+x2)/2},${y2} ${x2},${y2}`);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke', c.color);
+    path.setAttribute('stroke-width','6');
+    path.setAttribute('stroke-opacity','.18');
+    path.setAttribute('class','hoverable');
+    path.setAttribute('data-tip', nodes[ni].name + ' → ' + cats[ci].name);
+    path.setAttribute('data-desc', `${nodes[ni].name}属于${cats[ci].name}，在太和殿庑殿顶中承担相应的建筑功能。`);
+    svg.querySelector('#sankeyPaths').appendChild(path);
+  });
+
+  // Draw node labels
+  nodes.forEach(n => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x','0'); rect.setAttribute('y', n.y);
+    rect.setAttribute('width','78'); rect.setAttribute('height','16');
+    rect.setAttribute('fill','rgba(200,80,100,.1)'); rect.setAttribute('rx','3');
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x','39'); text.setAttribute('y', n.y+11);
+    text.setAttribute('text-anchor','middle'); text.setAttribute('fill','#5a2030');
+    text.setAttribute('font-size','9'); text.textContent = n.name;
+    g.appendChild(rect); g.appendChild(text);
+    svg.querySelector('#beastNodes').appendChild(g);
+  });
+
+  // Draw category nodes
+  cats.forEach(c => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x','182'); rect.setAttribute('y', c.y);
+    rect.setAttribute('width','90'); rect.setAttribute('height','16');
+    rect.setAttribute('fill','rgba(200,80,100,.12)'); rect.setAttribute('rx','3');
+    rect.setAttribute('stroke', c.color); rect.setAttribute('stroke-width','.8');
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x','227'); text.setAttribute('y', c.y+11);
+    text.setAttribute('text-anchor','middle'); text.setAttribute('fill', c.color);
+    text.setAttribute('font-size','9'); text.textContent = c.name;
+    g.appendChild(rect); g.appendChild(text);
+    svg.querySelector('#catNodes').appendChild(g);
+  });
+})();
+
+// ── Right Sankey (Beasts → Meanings) ─────────────────────────────────────────
+(function buildRightSankey() {
+  const svg = document.getElementById('rightSankey');
+  const beastNames = ['骑凤仙人','龙','凤','狮子','天马','海马','狻猊','犼','狎鱼','獬豸','斗牛','行什','垂兽'];
+  const midNodes = [{name:'共同意义\n36',y:80,color:'#c0405a'},{name:'独特意义\n24',y:180,color:'#8b6040'}];
+  const meanings = ['皇权象征','驱邪避凶','祥瑞吉祥','防灾护佑','等级标志'];
+  const beastH = 18, startY = 10;
+
+  // Beast → mid flows
+  beastNames.forEach((b,i) => {
+    const y1 = startY + i * beastH + 8;
+    const mid = i < 8 ? midNodes[0] : midNodes[1];
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M70,${y1} C115,${y1} 115,${mid.y+8} 155,${mid.y+8}`);
+    path.setAttribute('fill','none'); path.setAttribute('stroke', mid.color);
+    path.setAttribute('stroke-width','4'); path.setAttribute('stroke-opacity','.15');
+    svg.appendChild(path);
+  });
+
+  // Beast labels
+  beastNames.forEach((b,i) => {
+    const y = startY + i * beastH;
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x','0'); rect.setAttribute('y',y);
+    rect.setAttribute('width','68'); rect.setAttribute('height','15');
+    rect.setAttribute('fill','rgba(200,80,100,.1)'); rect.setAttribute('rx','3');
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x','34'); text.setAttribute('y',y+10);
+    text.setAttribute('text-anchor','middle'); text.setAttribute('fill','#5a2030');
+    text.setAttribute('font-size','8.5'); text.textContent = b;
+    svg.appendChild(rect); svg.appendChild(text);
+  });
+
+  // Mid nodes
+  midNodes.forEach(m => {
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x','157'); rect.setAttribute('y',m.y);
+    rect.setAttribute('width','50'); rect.setAttribute('height','30');
+    rect.setAttribute('fill','rgba(200,80,100,.12)'); rect.setAttribute('rx','4');
+    rect.setAttribute('stroke',m.color); rect.setAttribute('stroke-width','1');
+    const lines = m.name.split('\n');
+    lines.forEach((l,li) => {
+      const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+      text.setAttribute('x','182'); text.setAttribute('y', m.y + 12 + li*12);
+      text.setAttribute('text-anchor','middle'); text.setAttribute('fill',m.color);
+      text.setAttribute('font-size','8'); text.textContent = l;
+      svg.appendChild(text);
+    });
+    svg.appendChild(rect);
+  });
+
+  // Mid → meanings flows + meaning labels
+  meanings.forEach((m,i) => {
+    const y2 = 30 + i * 52;
+    [midNodes[0],midNodes[1]].forEach(mid => {
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',`M207,${mid.y+15} C230,${mid.y+15} 230,${y2+7} 210,${y2+7}`);
+      path.setAttribute('fill','none'); path.setAttribute('stroke','#FFB6C1');
+      path.setAttribute('stroke-width','3'); path.setAttribute('stroke-opacity','.12');
+      svg.appendChild(path);
+    });
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x','210'); rect.setAttribute('y',y2);
+    rect.setAttribute('width','48'); rect.setAttribute('height','14');
+    rect.setAttribute('fill','rgba(200,80,100,.1)'); rect.setAttribute('rx','3');
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x','234'); text.setAttribute('y',y2+10);
+    text.setAttribute('text-anchor','middle'); text.setAttribute('fill','#8b4060');
+    text.setAttribute('font-size','8'); text.textContent = m;
+    svg.appendChild(rect); svg.appendChild(text);
+  });
+})();
+
+// Re-bind tooltips for all dynamically created elements
+setTimeout(() => {
+  document.querySelectorAll('[data-tip]').forEach(el => {
+    if (el._tipBound) return;
+    el._tipBound = true;
+    el.addEventListener('mouseenter', () => {
+      tipTitle.textContent = el.dataset.tip;
+      tipBody.textContent = el.dataset.desc || '';
+      tip.style.opacity = '1';
+    });
+    el.addEventListener('mousemove', e => {
+      let x = e.clientX + 14, y = e.clientY - 10;
+      if (x + 270 > window.innerWidth) x = e.clientX - 280;
+      if (y + 120 > window.innerHeight) y = e.clientY - 130;
+      tip.style.left = x + 'px'; tip.style.top = y + 'px';
+    });
+    el.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
+  });
+}, 100);
+// 宫华檐 character interactions
+(function(){
+  const charImg    = document.getElementById('gonghuayan');
+  const hoverTip   = document.getElementById('char-hover-tip');
+  const clickDialog= document.getElementById('char-click-dialog');
+  const answerBubble = document.getElementById('char-answer-bubble');
+  const answerText   = document.getElementById('char-answer-text');
+  const answerClose  = document.getElementById('char-answer-close');
+  let dialogOpen = false;
+
+  const answers = [
+    '采用重檐庑殿顶，是中国古建筑最高等级屋顶。',
+    '四坡五脊，四面都有斜坡屋面，正脊加四条垂脊，造型庄重对称。',
+    '古建筑最高礼制等级，仅限皇家最高正殿使用。',
+    '不可以，古代有严格建筑规制，民间禁用此类高等级屋顶。',
+    '象征皇权至高无上、天下一统、国泰民安、皇家威严。',
+    '重檐多一层屋檐，气势更恢弘、等级更高，只用于帝王核心大殿。'
+  ];
+
+  charImg.addEventListener('mouseenter', () => {
+    if (!dialogOpen && answerBubble.style.display !== 'block') hoverTip.style.display = 'block';
+  });
+  const wrapEl = document.getElementById('gonghuayan-wrap');
+  wrapEl.addEventListener('mouseleave', () => {
+    hoverTip.style.display = 'none';
+  });
+  charImg.addEventListener('click', (e) => {
+    e.stopPropagation();
+    hoverTip.style.display = 'none';
+    answerBubble.style.display = 'none';
+    dialogOpen = !dialogOpen;
+    clickDialog.style.display = dialogOpen ? 'block' : 'none';
+  });
+  document.querySelectorAll('.char-q-item').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      hoverTip.style.display = 'none';
+      answerText.textContent = answers[+el.dataset.q];
+      answerBubble.style.display = 'block';
+    });
+  });
+  answerClose.addEventListener('click', function(e) {
+    e.stopPropagation();
+    answerBubble.style.display = 'none';
+  });
+  answerBubble.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', () => {
+    if (dialogOpen) { dialogOpen = false; clickDialog.style.display = 'none'; }
+    if (answerBubble.style.display === 'block') answerBubble.style.display = 'none';
+  });
+  clickDialog.addEventListener('click', e => e.stopPropagation());
+})();
+</script>
+</body>
+</html>
