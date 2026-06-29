@@ -664,8 +664,10 @@ setTimeout(() => {
   charImg.addEventListener('mouseenter', () => {
     if (!dialogOpen && answerBubble.style.display !== 'block') hoverTip.style.display = 'block';
   });
+  let _hideTimer;
   const wrapEl = document.getElementById('gonghuayan-wrap');
-  wrapEl.addEventListener('mouseleave', () => { hoverTip.style.display = 'none'; });
+  wrapEl.addEventListener('mouseleave', () => { _hideTimer = setTimeout(() => { hoverTip.style.display = 'none'; }, 1500); });
+  wrapEl.addEventListener('mouseenter', () => { clearTimeout(_hideTimer); });
   charImg.addEventListener('click', (e) => {
     e.stopPropagation();
     hoverTip.style.display = 'none';

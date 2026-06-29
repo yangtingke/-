@@ -764,9 +764,11 @@ function toggleClickBubble(e) {
 mascotImg.addEventListener('mouseenter', function() {
   if (!clickBubbleOpen && answerBubble.style.display !== 'block') hoverBubble.style.display = 'block';
 });
+let _hideTimer;
 mascotWrap.addEventListener('mouseleave', function() {
-  hoverBubble.style.display = 'none';
+  _hideTimer = setTimeout(() => { hoverBubble.style.display = 'none'; }, 1500);
 });
+mascotWrap.addEventListener('mouseenter', function() { clearTimeout(_hideTimer); });
 document.addEventListener('click', function() {
   if (clickBubbleOpen) {
     clickBubbleOpen = false;
