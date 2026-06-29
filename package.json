@@ -1,0 +1,8 @@
+{
+  "name": "ancient-architecture",
+  "version": "1.0.0",
+  "description": "三大古建筑 东方匠心与美学",
+  "scripts": {
+    "build": "node build.js"
+  }
+}
