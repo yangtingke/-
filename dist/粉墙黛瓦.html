@@ -31,15 +31,6 @@ body{font-family:'Noto Serif SC','仿宋_GB2312',FangSong,serif;background:linea
 #char-answer-bubble::before{content:'';position:absolute;top:17px;right:-11px;border:6px solid transparent;border-left-color:#5aaa3a;}
 #char-answer-close{display:block;margin-top:10px;font-size:11px;color:#5aaa3a;cursor:pointer;text-align:right;pointer-events:auto;}
 #char-answer-close:hover{text-decoration:underline;}
-/* AI 对话区 */
-#ai-chat-area{margin-top:10px;border-top:1px solid rgba(90,170,58,.35);padding-top:10px;}
-#ai-input-row{display:flex;gap:6px;align-items:flex-end;}
-#ai-user-input{flex:1;font-size:12px;font-family:'Noto Serif SC',serif;padding:5px 10px;border-radius:10px;border:1px solid #5aaa3a;background:rgba(255,255,255,.9);color:#2a6010;outline:none;resize:none;min-height:34px;max-height:80px;line-height:1.5;}
-#ai-send-btn{padding:5px 10px;background:linear-gradient(135deg,#5aaa3a,#92e681);color:#fff;border:none;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:'Noto Serif SC',serif;flex-shrink:0;}
-#ai-send-btn:disabled{opacity:.5;cursor:not-allowed;}
-#ai-response-area{margin-top:8px;font-size:12px;color:#2a6010;line-height:1.75;min-height:0;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;}
-.ai-loading::after{content:'…';animation:blink .8s step-end infinite;}
-@keyframes blink{50%{opacity:0;}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn 1s ease both}
 #header{width:100%;padding:26px 48px 18px;background:linear-gradient(180deg,rgba(218,237,145,.8),rgba(146,230,129,.9));border-bottom:2px solid rgba(80,160,40,.2);position:relative;overflow:visible;display:flex;align-items:center;justify-content:space-between;z-index:100}
@@ -126,7 +117,7 @@ body{font-family:'Noto Serif SC','仿宋_GB2312',FangSong,serif;background:linea
 <div id="huiyumo-wrap" style="position:fixed;top:0;right:0;width:396px;height:396px;z-index:10001;pointer-events:auto">
   <img id="huiyumo" src="./小绿.png" alt="徽雨墨" style="position:absolute;bottom:0;right:0;height:396px;width:auto;pointer-events:auto">
   <!-- hover 气泡 -->
-  <div id="char-hover-tip" class="char-bubble clickable" style="display:none;top:60px;right:calc(100% + -100px);white-space:normal;width:260px;">
+  <div id="char-hover-tip" class="char-bubble clickable" style="display:none;top:60px;right:calc(100% + -100px);white-space:normal;width:240px;">
     你好，我叫徽雨墨，快来和我一起了解徽派马头墙吧！
     <div class="char-q-list">
       <span class="char-q-item" data-q="0">① 为什么叫马头墙？</span>
@@ -135,13 +126,6 @@ body{font-family:'Noto Serif SC','仿宋_GB2312',FangSong,serif;background:linea
       <span class="char-q-item" data-q="3">④ 除了防火还有什么作用？</span>
       <span class="char-q-item" data-q="4">⑤ 哪些建筑最常用马头墙？</span>
       <span class="char-q-item" data-q="5">⑥ 属于官方礼制建筑吗？</span>
-    </div>
-    <div id="ai-chat-area">
-      <div id="ai-input-row">
-        <textarea id="ai-user-input" placeholder="问我任何关于古建筑的问题…" rows="1"></textarea>
-        <button id="ai-send-btn">发送</button>
-      </div>
-      <div id="ai-response-area"></div>
     </div>
   </div>
   <!-- 答案气泡 -->
@@ -919,21 +903,16 @@ document.querySelectorAll('.btype-item').forEach(el => {
   });
 });
 
-// ===== 徽雨墨人物交互 + AI对话 =====
+// ===== 徽雨墨人物交互 =====
 (function(){
-  const charImg      = document.getElementById('huiyumo');
-  const hoverTip     = document.getElementById('char-hover-tip');
-  const clickDialog  = document.getElementById('char-click-dialog');
+  const charImg    = document.getElementById('huiyumo');
+  const hoverTip   = document.getElementById('char-hover-tip');
+  const clickDialog= document.getElementById('char-click-dialog');
   const answerBubble = document.getElementById('char-answer-bubble');
   const answerText   = document.getElementById('char-answer-text');
   const answerClose  = document.getElementById('char-answer-close');
-  const aiInput      = document.getElementById('ai-user-input');
-  const aiSendBtn    = document.getElementById('ai-send-btn');
-  const aiResponseArea = document.getElementById('ai-response-area');
   if (!charImg) return;
   let dialogOpen = false;
-
-  const SYSTEM_PROMPT = '你是徽雨墨，一位专注于徽派建筑知识的讲解员。只回答与徽派建筑、马头墙、皖南古民居相关的问题。对于其他话题，礼貌地引导用户回到徽派建筑主题。回答请简洁专业，使用中文，150字以内。';
 
   const answers = [
     '墙体轮廓高低错落、翘角形似昂首马头，故而得名。',
@@ -944,10 +923,7 @@ document.querySelectorAll('.btype-item').forEach(el => {
     '不属于，是民间乡土建筑特色构造，无皇家等级限制。'
   ];
 
-  function speakText(text) {}
-  charImg.addEventListener('mouseenter', () => {
-    if (!dialogOpen && answerBubble.style.display !== 'block') hoverTip.style.display = 'block';
-  });
+  charImg.addEventListener('mouseenter', () => { if (!dialogOpen && answerBubble.style.display !== 'block') hoverTip.style.display = 'block'; });
   const wrapEl = document.getElementById('huiyumo-wrap');
   wrapEl.addEventListener('mouseleave', () => { hoverTip.style.display = 'none'; });
   charImg.addEventListener('click', (e) => {
@@ -970,39 +946,6 @@ document.querySelectorAll('.btype-item').forEach(el => {
     answerBubble.style.display = 'none';
   });
   answerBubble.addEventListener('click', e => e.stopPropagation());
-
-  async function sendAiMessage() {
-    const question = aiInput.value.trim();
-    if (!question) return;
-    aiInput.value = '';
-    aiSendBtn.disabled = true;
-    aiResponseArea.textContent = '思考中';
-    aiResponseArea.classList.add('ai-loading');
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({messages: [{role:'user',content:question}], systemPrompt: SYSTEM_PROMPT})
-      });
-      const data = await res.json();
-      aiResponseArea.textContent = data.answer || '暂时无法回答，请稍后再试。';
-    } catch(err) {
-      aiResponseArea.textContent = '网络错误，请稍后重试。';
-    }
-    aiResponseArea.classList.remove('ai-loading');
-    aiSendBtn.disabled = false;
-  }
-
-  aiSendBtn.addEventListener('click', function(e){ e.stopPropagation(); sendAiMessage(); });
-  aiInput.addEventListener('keydown', function(e){
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAiMessage(); }
-  });
-  aiInput.addEventListener('input', function(){
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 80) + 'px';
-  });
-  [hoverTip, answerBubble, clickDialog].forEach(el => el.addEventListener('click', e => e.stopPropagation()));
-
   document.addEventListener('click', () => {
     if (dialogOpen) { dialogOpen = false; clickDialog.style.display = 'none'; }
     if (answerBubble.style.display === 'block') answerBubble.style.display = 'none';

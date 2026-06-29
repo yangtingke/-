@@ -88,13 +88,13 @@
     border:1.5px solid #f9c23c;
     border-radius:14px;
     padding:10px 16px;
-    width:260px;
+    width:240px;
     font-size:13px;color:#6b3f00;
     letter-spacing:.5px;
     line-height:1.6;
     box-shadow:0 4px 22px rgba(180,110,0,.22);
     pointer-events:auto;
-    display:none;
+    opacity:0;transition:opacity .25s;
     z-index:10002;
     white-space:normal;
   }
@@ -110,7 +110,8 @@
     border:6px solid transparent;
     border-left-color:#f9c23c;
   }
-  #mascot-wrap.click-open #mascot-hover-bubble{display:none!important;}
+  #mascot-wrap:hover #mascot-hover-bubble{opacity:1;}
+  #mascot-wrap.click-open #mascot-hover-bubble{opacity:0!important;}
   /* 问题列表 */
   .mascot-q-list{margin-top:8px;border-top:1px solid rgba(249,194,60,.4);padding-top:8px;display:flex;flex-direction:column;gap:5px;}
   .mascot-q-item{font-size:12px;color:#8c5e0f;cursor:pointer;padding:3px 6px;border-radius:6px;transition:background .15s,color .15s;pointer-events:auto;line-height:1.5;}
@@ -139,15 +140,6 @@
   #mascot-answer-bubble::before{content:'';position:absolute;top:17px;right:-11px;border:6px solid transparent;border-left-color:#f9c23c;}
   #mascot-answer-close{display:block;margin-top:10px;font-size:11px;color:#b07a00;cursor:pointer;text-align:right;pointer-events:auto;}
   #mascot-answer-close:hover{text-decoration:underline;}
-  /* AI 对话区 */
-  #ai-chat-area{margin-top:10px;border-top:1px solid rgba(249,194,60,.4);padding-top:10px;}
-  #ai-input-row{display:flex;gap:6px;align-items:flex-end;}
-  #ai-user-input{flex:1;font-size:12px;font-family:'Noto Serif SC',serif;padding:5px 10px;border-radius:10px;border:1px solid #f9c23c;background:rgba(255,255,255,.9);color:#6b3f00;outline:none;resize:none;min-height:34px;max-height:80px;line-height:1.5;}
-  #ai-send-btn{padding:5px 10px;background:linear-gradient(135deg,#f9c23c,#e6a31f);color:#5a3200;border:none;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:'Noto Serif SC',serif;flex-shrink:0;font-weight:700;}
-  #ai-send-btn:disabled{opacity:.5;cursor:not-allowed;}
-  #ai-response-area{margin-top:8px;font-size:12px;color:#6b3f00;line-height:1.75;min-height:0;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;}
-  .ai-loading::after{content:'…';animation:blink .8s step-end infinite;}
-  @keyframes blink{50%{opacity:0;}}
 
   /* click 气泡 */
   #mascot-click-bubble{
@@ -274,13 +266,6 @@
       <span class="mascot-q-item" data-q="3">④ 风雨桥有什么功能？</span>
       <span class="mascot-q-item" data-q="4">⑤ 选材和建造有什么特点？</span>
       <span class="mascot-q-item" data-q="5">⑥ 和中式古建筑有何区别？</span>
-    </div>
-    <div id="ai-chat-area">
-      <div id="ai-input-row">
-        <textarea id="ai-user-input" placeholder="问我任何关于古建筑的问题…" rows="1"></textarea>
-        <button id="ai-send-btn">发送</button>
-      </div>
-      <div id="ai-response-area"></div>
     </div>
   </div>
   <!-- 答案气泡 -->
@@ -747,23 +732,13 @@ const ttBody  = document.getElementById('tt-body');
 // 吉祥物 click 气泡
 const clickBubble = document.getElementById('mascot-click-bubble');
 const mascotWrap  = document.getElementById('mascot-wrap');
-const mascotImg   = document.getElementById('mascot-img');
-const hoverBubble = document.getElementById('mascot-hover-bubble');
 let clickBubbleOpen = false;
-
 function toggleClickBubble(e) {
   e.stopPropagation();
   clickBubbleOpen = !clickBubbleOpen;
   clickBubble.style.display = clickBubbleOpen ? 'block' : 'none';
-  hoverBubble.style.display = 'none';
   mascotWrap.classList.toggle('click-open', clickBubbleOpen);
 }
-mascotImg.addEventListener('mouseenter', function() {
-  if (!clickBubbleOpen && answerBubble.style.display !== 'block') hoverBubble.style.display = 'block';
-});
-mascotWrap.addEventListener('mouseleave', function() {
-  hoverBubble.style.display = 'none';
-});
 document.addEventListener('click', function() {
   if (clickBubbleOpen) {
     clickBubbleOpen = false;
@@ -785,16 +760,10 @@ const answers = [
 const answerBubble = document.getElementById('mascot-answer-bubble');
 const answerText   = document.getElementById('mascot-answer-text');
 const answerClose  = document.getElementById('mascot-answer-close');
-const aiInput      = document.getElementById('ai-user-input');
-const aiSendBtn    = document.getElementById('ai-send-btn');
-const aiResponseArea = document.getElementById('ai-response-area');
-
-const SYSTEM_PROMPT = '你是侗楼歌，一位专注于侗族建筑知识的讲解员。只回答与侗族建筑、鼓楼、风雨桥、多重檐相关的问题。对于其他话题，礼貌地引导用户回到侗族建筑主题。回答请简洁专业，使用中文，150字以内。';
 
 document.querySelectorAll('.mascot-q-item').forEach(function(el) {
   el.addEventListener('click', function(e) {
     e.stopPropagation();
-    hoverBubble.style.display = 'none';
     answerText.textContent = answers[+el.dataset.q];
     answerBubble.style.display = 'block';
     mascotWrap.classList.add('click-open');
@@ -812,32 +781,6 @@ document.addEventListener('click', function() {
     mascotWrap.classList.remove('click-open');
   }
 });
-
-async function sendAiMessage() {
-  const question = aiInput.value.trim();
-  if (!question) return;
-  aiInput.value = '';
-  aiSendBtn.disabled = true;
-  aiResponseArea.textContent = '思考中';
-  aiResponseArea.classList.add('ai-loading');
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({messages: [{role:'user',content:question}], systemPrompt: SYSTEM_PROMPT})
-    });
-    const data = await res.json();
-    aiResponseArea.textContent = data.answer || '暂时无法回答，请稍后再试。';
-  } catch(err) {
-    aiResponseArea.textContent = '网络错误，请稍后重试。';
-  }
-  aiResponseArea.classList.remove('ai-loading');
-  aiSendBtn.disabled = false;
-}
-aiSendBtn.addEventListener('click', function(e){ e.stopPropagation(); sendAiMessage(); });
-aiInput.addEventListener('keydown', function(e){ if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAiMessage();} });
-aiInput.addEventListener('input', function(){ this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,80)+'px'; });
-[hoverBubble, answerBubble, clickBubble].forEach(el => el.addEventListener('click', e => e.stopPropagation()));
 
 function showTip(e, title, body) {
   ttTitle.textContent = title;

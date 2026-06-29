@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>叠檐侗韵 · 深度解析</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:linear-gradient(135deg,#fffde7 0%,#fff8c5 50%,#ffecb3 100%);min-height:100vh;font-family:'Noto Serif SC',serif;color:#5a3200}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#fffde7}
+::-webkit-scrollbar-thumb{background:#d48f1a;border-radius:2px}
+/* 头部 */
+#page-header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px 14px;background:linear-gradient(180deg,rgba(255,245,150,.88),rgba(255,220,80,.92));border-bottom:2px solid rgba(212,143,26,.25);position:sticky;top:0;z-index:200}
+#page-header h1{font-size:32px;font-weight:700;letter-spacing:5px;background:linear-gradient(135deg,#5a3200,#d48f1a,#8c5e0f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;background:linear-gradient(135deg,#f9c23c,#e6a31f);color:#5a3200;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;letter-spacing:1px;box-shadow:0 2px 10px rgba(249,194,60,.4);border:1.5px solid #d48f1a;transition:filter .2s}
+.back-btn:hover{filter:brightness(1.1)}
+/* 主布局 */
+#page-layout{display:flex;min-height:calc(100vh - 70px)}
+/* 左侧 */
+#kg-sidebar{width:260px;flex-shrink:0;position:sticky;top:70px;height:calc(100vh - 70px);overflow-y:auto;padding:18px 14px;border-right:1px solid rgba(212,143,26,.25);background:rgba(255,252,230,.78);backdrop-filter:blur(8px)}
+.kg-title{font-size:13px;font-weight:700;color:#8c5e0f;letter-spacing:2px;border-bottom:1.5px solid rgba(212,143,26,.4);padding-bottom:8px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.kg-title::before{content:'◆';font-size:8px;color:#d48f1a}
+.kg-cat{margin-bottom:6px;border-radius:8px;overflow:hidden;border:1px solid rgba(212,143,26,.22)}
+.kg-cat-hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(249,194,60,.15);cursor:pointer;font-size:13px;font-weight:700;color:#8c5e0f;user-select:none;transition:background .2s}
+.kg-cat-hd:hover{background:rgba(249,194,60,.28)}
+.kg-cat-hd .arrow{font-size:10px;transition:transform .25s;color:#d48f1a}
+.kg-cat.open .kg-cat-hd .arrow{transform:rotate(90deg)}
+.kg-items{display:none;padding:4px 0;background:rgba(255,255,255,.62)}
+.kg-cat.open .kg-items{display:block}
+.kg-item{padding:7px 16px 7px 20px;font-size:12px;color:#7a4a00;cursor:pointer;transition:background .15s,color .15s;border-left:2px solid transparent;line-height:1.5}
+.kg-item:hover{background:rgba(249,194,60,.18);color:#5a3200;border-left-color:#d48f1a}
+.kg-item.active{background:rgba(249,194,60,.22);color:#5a3200;border-left-color:#d48f1a;font-weight:600}
+/* 内容区 */
+#content-area{flex:1;padding:24px 280px 40px 32px;overflow-y:auto;min-width:0}
+.content-section{margin-bottom:32px;scroll-margin-top:88px}
+.section-heading{font-size:20px;font-weight:700;color:#8c5e0f;letter-spacing:3px;border-left:4px solid #d48f1a;padding-left:14px;margin-bottom:14px}
+.section-sub{font-size:15px;font-weight:700;color:#a06020;letter-spacing:2px;border-bottom:1px dashed rgba(212,143,26,.4);padding-bottom:6px;margin:16px 0 10px}
+.section-body{font-size:13.5px;color:#5a3000;line-height:2;background:rgba(255,255,255,.72);border-radius:10px;padding:14px 18px;border:1px solid rgba(212,143,26,.18);box-shadow:0 2px 10px rgba(180,110,0,.07)}
+/* 瀑布流 */
+#gallery-section{margin-bottom:40px;scroll-margin-top:88px}
+.gallery-title{font-size:20px;font-weight:700;color:#8c5e0f;letter-spacing:3px;border-left:4px solid #d48f1a;padding-left:14px;margin-bottom:18px}
+.gallery-grid{columns:3;column-gap:12px}
+.gallery-item{break-inside:avoid;margin-bottom:12px;border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;position:relative}
+.gallery-item:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(180,110,0,.28)}
+.gallery-item img{width:100%;display:block;object-fit:cover}
+.gallery-item .caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(90,50,0,.78));color:#fff;font-size:11px;padding:14px 10px 7px;letter-spacing:1px;opacity:0;transition:opacity .25s}
+.gallery-item:hover .caption{opacity:1}
+/* Lightbox */
+#lightbox{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox.active{display:flex}
+#lightbox-img{max-width:88vw;max-height:88vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.6);object-fit:contain}
+#lightbox-close{position:absolute;top:18px;right:26px;font-size:36px;color:#fff;cursor:pointer;opacity:.8;transition:opacity .2s}
+#lightbox-close:hover{opacity:1}
+#lightbox-caption{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;letter-spacing:2px;white-space:nowrap}
+/* 吉祥物 */
+#mascot-wrap{position:fixed;top:0;right:0;width:333px;height:426px;z-index:2147483647;pointer-events:auto}
+#mascot-img{position:absolute;bottom:0;right:0;height:426px;width:auto;cursor:pointer;transition:filter .35s ease;z-index:2147483647;pointer-events:auto}
+#mascot-img:hover{filter:drop-shadow(0 0 10px rgba(249,194,60,.95)) drop-shadow(0 0 22px rgba(230,163,31,.7)) drop-shadow(0 0 4px rgba(255,220,100,.8))}
+#mascot-hover-bubble{position:absolute;right:calc(100% + 12px);top:60px;background:rgba(255,252,235,.97);border:1.5px solid #f9c23c;border-radius:14px;padding:10px 16px;width:260px;font-size:13px;color:#6b3f00;letter-spacing:.5px;line-height:1.6;box-shadow:0 4px 22px rgba(180,110,0,.22);pointer-events:auto;display:none;z-index:10002;white-space:normal}
+#mascot-hover-bubble::after{content:'';position:absolute;top:18px;right:-9px;border:5px solid transparent;border-left-color:rgba(255,252,235,.97)}
+#mascot-hover-bubble::before{content:'';position:absolute;top:17px;right:-11px;border:6px solid transparent;border-left-color:#f9c23c}
+.mascot-q-list{margin-top:8px;border-top:1px solid rgba(249,194,60,.4);padding-top:8px;display:flex;flex-direction:column;gap:5px}
+.mascot-q-item{font-size:12px;color:#8c5e0f;cursor:pointer;padding:3px 6px;border-radius:6px;transition:background .15s,color .15s;pointer-events:auto;line-height:1.5}
+.mascot-q-item:hover{background:rgba(249,194,60,.25);color:#5a3200}
+#mascot-answer-bubble{position:absolute;right:calc(100% + 12px);top:60px;background:rgba(255,252,235,.97);border:1.5px solid #f9c23c;border-radius:14px;padding:12px 16px;width:260px;font-size:13px;color:#6b3f00;letter-spacing:.5px;line-height:1.7;box-shadow:0 4px 22px rgba(180,110,0,.22);z-index:10003;white-space:normal;display:none}
+#mascot-answer-bubble::after{content:'';position:absolute;top:18px;right:-9px;border:5px solid transparent;border-left-color:rgba(255,252,235,.97)}
+#mascot-answer-bubble::before{content:'';position:absolute;top:17px;right:-11px;border:6px solid transparent;border-left-color:#f9c23c}
+#mascot-answer-close{display:block;margin-top:10px;font-size:11px;color:#b07a00;cursor:pointer;text-align:right;pointer-events:auto}
+#mascot-click-bubble{position:absolute;right:calc(100% + 12px);top:60px;background:rgba(255,252,235,.97);border:1.5px solid #f9c23c;border-radius:14px;padding:10px 16px;width:200px;font-size:13px;color:#6b3f00;letter-spacing:.5px;line-height:1.6;box-shadow:0 4px 22px rgba(180,110,0,.22);z-index:10002;white-space:normal;display:none}
+#mascot-click-bubble::after{content:'';position:absolute;top:18px;right:-9px;border:5px solid transparent;border-left-color:rgba(255,252,235,.97)}
+#mascot-click-bubble::before{content:'';position:absolute;top:17px;right:-11px;border:6px solid transparent;border-left-color:#f9c23c}
+#mascot-back-btn{display:inline-block;margin-top:8px;padding:5px 14px;background:linear-gradient(135deg,#f9c23c,#e6a31f);color:#5a3200;font-size:12px;font-weight:700;border-radius:20px;text-decoration:none;border:1.5px solid #d48f1a;cursor:pointer;transition:filter .2s;pointer-events:auto}
+#mascot-back-btn:hover{filter:brightness(1.1)}
+#ai-chat-area{margin-top:10px;border-top:1px solid rgba(249,194,60,.4);padding-top:10px}
+#ai-input-row{display:flex;gap:6px;align-items:flex-end}
+#ai-user-input{flex:1;font-size:12px;font-family:'Noto Serif SC',serif;padding:5px 10px;border-radius:10px;border:1px solid #f9c23c;background:rgba(255,255,255,.9);color:#6b3f00;outline:none;resize:none;min-height:34px;max-height:80px;line-height:1.5}
+#ai-send-btn{padding:5px 10px;background:linear-gradient(135deg,#f9c23c,#e6a31f);color:#5a3200;border:none;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:'Noto Serif SC',serif;flex-shrink:0;font-weight:700}
+#ai-send-btn:disabled{opacity:.5;cursor:not-allowed}
+#ai-response-area{margin-top:8px;font-size:12px;color:#6b3f00;line-height:1.75;min-height:0;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+.ai-loading::after{content:'…';animation:blink .8s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+
+<header id="page-header">
+  <h1>叠檐侗韵 · 深度解析</h1>
+  <a href="叠檐侗韵.html" class="back-btn">← 返回</a>
+</header>
+
+<div id="page-layout">
+
+<aside id="kg-sidebar">
+  <div class="kg-title">知识图谱目录</div>
+
+  <div class="kg-cat open" id="cat-history">
+    <div class="kg-cat-hd" onclick="toggleCat('cat-history')">
+      <span>📜 历史价值</span><span class="arrow">▶</span>
+    </div>
+    <div class="kg-items">
+      <div class="kg-item" onclick="navTo('sec-h1','非物质文化遗产——侗族木构建筑营造技艺已列入国家级非物质文化遗产名录，是中华民族建筑智慧的重要组成部分。')">非物质文化遗产</div>
+      <div class="kg-item" onclick="navTo('sec-h2','族群凝聚象征——鼓楼是侗寨的政治、文化和精神中心，是族群身份认同与集体记忆的核心载体。')">族群凝聚象征</div>
+      <div class="kg-item" onclick="navTo('sec-h3','代表建筑年代——增冲鼓楼建于清康熙年间，程阳风雨桥建于1916年，均是侗族建筑史上的里程碑。')">代表建筑年代</div>
+      <div class="kg-item" onclick="navTo('sec-h4','独立建筑传统——侗族建筑形成了有别于汉式官式建筑的独立体系，在西南少数民族建筑史上有重要地位。')">独立建筑传统</div>
+    </div>
+  </div>
+
+  <div class="kg-cat" id="cat-form">
+    <div class="kg-cat-hd" onclick="toggleCat('cat-form')">
+      <span>🏛️ 形制特征</span><span class="arrow">▶</span>
+    </div>
+    <div class="kg-items">
+      <div class="kg-item" onclick="navTo('sec-f1','鼓楼层数规制——侗族鼓楼层数多为奇数，三、五、七、九、十一层均有，层数越多代表寨子规模越大、历史越悠久。')">鼓楼层数规制</div>
+      <div class="kg-item" onclick="navTo('sec-f2','多重檐向上递减——每层向内收分，最终形成宝塔状的轮廓，是侗族多重檐建筑最具标志性的视觉特征。')">多重檐向上递减</div>
+      <div class="kg-item" onclick="navTo('sec-f3','宝顶造型——鼓楼顶部的葫芦形或火焰形宝顶，既是装饰构件，也象征生命力旺盛、村寨兴旺。')">宝顶造型</div>
+      <div class="kg-item" onclick="navTo('sec-f4','风雨桥廊桥形式——廊屋与桥体结合，形成集交通、遮蔽、休憩于一体的多功能公共建筑。')">风雨桥廊桥形式</div>
+    </div>
+  </div>
+
+  <div class="kg-cat" id="cat-tech">
+    <div class="kg-cat-hd" onclick="toggleCat('cat-tech')">
+      <span>🔧 结构技艺</span><span class="arrow">▶</span>
+    </div>
+    <div class="kg-items">
+      <div class="kg-item" onclick="navTo('sec-t1','无钉榫卯——侗族木构建筑完全依靠榫卯结构拼接，不用一颗铁钉，是中国传统木作技艺的极致体现。')">无钉榫卯工艺</div>
+      <div class="kg-item" onclick="navTo('sec-t2','穿斗式构架——以竖向穿插的枋木将立柱串联成整体，形成高效稳固的框架结构，是南方木构的典型做法。')">穿斗式构架</div>
+      <div class="kg-item" onclick="navTo('sec-t3','牛腿斗拱——侗族建筑特有的出挑构件，形似牛腿，层层悬挑支撑多重屋檐，造型粗犷有力。')">牛腿斗拱</div>
+      <div class="kg-item" onclick="navTo('sec-t4','口传技艺——侗族木匠师傅世代口耳相传，不依赖图纸，凭借经验和记忆建造复杂的多重檐结构。')">口传营造技艺</div>
+    </div>
+  </div>
+</aside>
+
+<main id="content-area">
+
+  <section class="content-section" id="sec-h1">
+    <h2 class="section-heading">📜 历史价值</h2>
+    <h3 class="section-sub">非物质文化遗产</h3>
+    <div class="section-body">2006年，侗族木构建筑营造技艺被列入中国首批国家级非物质文化遗产名录。这一技艺的核心在于全程不借助图纸，仅凭师傅口传身授、工匠手脑协作完成复杂的多重檐木构建筑。这种活态传承的建筑智慧，被视为人类非物质文化遗产中木作技艺的典范。</div>
+  </section>
+  <section class="content-section" id="sec-h2">
+    <h3 class="section-sub">族群凝聚象征</h3>
+    <div class="section-body">鼓楼不仅是一栋建筑，更是侗寨的"灵魂"。村寨重大事务在此商议，节日活动在此举行，青年男女在此对歌约会，族群的历史记忆与文化认同在这里传递与延续。一座鼓楼代表一个房族，有多少鼓楼就有多少房族，鼓楼的数量直接体现侗寨的人口与规模。</div>
+  </section>
+  <section class="content-section" id="sec-h3">
+    <h3 class="section-sub">代表建筑年代</h3>
+    <div class="section-body">贵州从江县的<strong>增冲鼓楼</strong>始建于清康熙年间（约1672年），是中国现存最古老的鼓楼之一，高25米、11重檐，历经三百余年风雨依然屹立。广西三江的<strong>程阳永济桥</strong>（风雨桥）建于1916年，全长77.76米，由5座桥亭和4段廊屋组成，是侗族风雨桥的杰出代表。</div>
+  </section>
+  <section class="content-section" id="sec-h4">
+    <h3 class="section-sub">独立建筑传统</h3>
+    <div class="section-body">侗族建筑是在中原汉式礼制建筑体系之外独立发展的少数民族建筑传统。它不受皇家等级制度约束，形式更自由，功能更贴近村寨公共生活。全木榫卯、干栏架空、多重叠檐这三大特征，构成了侗族建筑有别于任何其他建筑传统的独特标识。</div>
+  </section>
+
+  <section class="content-section" id="sec-f1">
+    <h2 class="section-heading">🏛️ 形制特征</h2>
+    <h3 class="section-sub">鼓楼层数规制</h3>
+    <div class="section-body">侗族鼓楼的层数多为奇数，从3层到17层不等，其中以9层、11层最为常见。奇数层寓意吉祥，象征阳气旺盛；层数越多代表村寨历史越悠久、人口越多、经济越繁荣。建鼓楼是整个村寨的集体行为，所需木料和劳力由全寨共同出资出力，鼓楼因此凝聚着整个族群的情感。</div>
+  </section>
+  <section class="content-section" id="sec-f2">
+    <h3 class="section-sub">多重檐向上递减</h3>
+    <div class="section-body">侗族鼓楼的多重檐并非简单叠加，而是每一层都向内收分，平面尺寸逐层缩小，出挑逐层减短，形成优美的宝塔状轮廓。这种向上递减的设计一方面具有良好的结构稳定性，另一方面使建筑轮廓线条轻盈流动，在南方多山的景观中犹如破云而出的宝塔，极具视觉冲击力。</div>
+  </section>
+  <section class="content-section" id="sec-f3">
+    <h3 class="section-sub">宝顶造型</h3>
+    <div class="section-body">鼓楼顶部的宝顶是整座建筑的视觉焦点。常见形式有<strong>葫芦形</strong>（象征福禄多子）和<strong>火焰形</strong>（象征驱邪辟凶、生命旺盛）两种。宝顶通常以陶制或木制工艺完成，外表施以彩绘或釉面，在阳光下熠熠生辉。部分鼓楼宝顶上还饰有侗族传统图腾纹样，具有浓郁的民族文化特色。</div>
+  </section>
+  <section class="content-section" id="sec-f4">
+    <h3 class="section-sub">风雨桥廊桥形式</h3>
+    <div class="section-body">侗族风雨桥是将桥与廊屋完美结合的独特建筑类型。桥墩以石砌为基础，桥身全为木构，廊屋覆盖桥面全程，行人无论刮风下雨都可无遮盖地通行。廊内设有长凳供村民休憩，是侗寨重要的公共空间。重要的风雨桥往往还设有桥亭，形成"亭-廊-亭"的节奏感十足的空间序列。</div>
+  </section>
+
+  <section class="content-section" id="sec-t1">
+    <h2 class="section-heading">🔧 结构技艺</h2>
+    <h3 class="section-sub">无钉榫卯工艺</h3>
+    <div class="section-body">侗族木构建筑不使用任何铁钉，完全依靠榫卯结构将数以千计的木构件咬合在一起。榫头与卯眼的形状、尺寸经过精密计算，在受力时越拉越紧，越压越稳。这种不用钉的做法不仅源于铁材匮乏的历史条件，更体现了侗族工匠对力学规律的深刻理解，是中国木作技艺最高水平的代表之一。</div>
+  </section>
+  <section class="content-section" id="sec-t2">
+    <h3 class="section-sub">穿斗式构架</h3>
+    <div class="section-body">穿斗式构架是侗族建筑的核心结构体系，以竖向立柱为主体，横向穿枋将多根立柱串联成一榀（一组），多榀排列后形成整体框架。与北方抬梁式相比，穿斗式用料较细，柱子较多，整体性强，对木材的利用更为经济，特别适合盛产杉木的侗族山区。</div>
+  </section>
+  <section class="content-section" id="sec-t3">
+    <h3 class="section-sub">牛腿斗拱</h3>
+    <div class="section-body">侗族建筑没有中原式的精致斗拱，而是以"牛腿"（粗壮的斜向撑木）代替斗拱承托出挑的屋檐。牛腿形态粗犷有力，通常在其上雕刻龙、凤、鱼等侗族图腾，兼具结构与装饰的双重功能。牛腿出挑越大，屋檐的遮雨面积越宽，这对多雨的侗族山区尤为重要。</div>
+  </section>
+  <section class="content-section" id="sec-t4">
+    <h3 class="section-sub">口传营造技艺</h3>
+    <div class="section-body">侗族传统木匠（称"掌墨师"）不识图纸，却能凭借脑中的尺度记忆和手上的经验积累，精确建造出层数繁多、结构复杂的多重檐鼓楼。掌墨师用一根竹杆刻下所有尺寸，代替现代图纸。这套技艺通过严格的师徒制代代相传，至今仍是国家级非遗的核心传承内容。</div>
+  </section>
+
+  <section id="gallery-section">
+    <h2 class="gallery-title">📷 实景影像</h2>
+    <div class="gallery-grid">
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=600&q=80" alt="侗族鼓楼">
+        <div class="caption">侗族多重檐鼓楼</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1518638150340-f706e86654de?w=600&q=80" alt="风雨桥">
+        <div class="caption">程阳风雨桥廊道</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600&q=80" alt="侗寨山景">
+        <div class="caption">黔东南侗寨山景</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80" alt="古道石板">
+        <div class="caption">侗寨古道石板路</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=600&q=80" alt="山村倒影">
+        <div class="caption">侗寨晨雾与水田</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80" alt="木构细节">
+        <div class="caption">木构榫卯节点</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80" alt="贵州山村">
+        <div class="caption">贵州山村鼓楼群</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80" alt="春日侗寨">
+        <div class="caption">春日侗寨烟雨</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1551009175-8a68da93d5f9?w=600&q=80" alt="木构廊道">
+        <div class="caption">风雨桥廊屋内景</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1533050487297-09b450131914?w=600&q=80" alt="鼓楼屋檐">
+        <div class="caption">鼓楼多重檐细节</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1537274942065-eda9d00a6293?w=600&q=80" alt="侗族村落">
+        <div class="caption">侗族村落鸟瞰</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80" alt="木雕装饰">
+        <div class="caption">侗族木雕装饰</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<div id="lightbox" onclick="closeLb()">
+  <span id="lightbox-close" onclick="closeLb()">×</span>
+  <img id="lightbox-img" src="" alt="">
+  <div id="lightbox-caption"></div>
+</div>
+
+<div id="mascot-wrap">
+  <img id="mascot-img" src="./小黄.png" alt="侗楼歌" onclick="toggleClickBubble(event)"/>
+  <div id="mascot-hover-bubble">
+    你好，我叫侗楼歌，快来和我一起了解侗族多重檐吧！
+    <div class="mascot-q-list">
+      <span class="mascot-q-item" data-q="0">① 鼓楼为什么建在寨中心？</span>
+      <span class="mascot-q-item" data-q="1">② 多重檐有什么实际用途？</span>
+      <span class="mascot-q-item" data-q="2">③ 不用钉子怎么建这么高？</span>
+      <span class="mascot-q-item" data-q="3">④ 风雨桥怎么建在水上的？</span>
+      <span class="mascot-q-item" data-q="4">⑤ 侗族选什么木材建楼？</span>
+      <span class="mascot-q-item" data-q="5">⑥ 鼓楼的宝顶有什么寓意？</span>
+    </div>
+    <div id="ai-chat-area">
+      <div id="ai-input-row">
+        <textarea id="ai-user-input" placeholder="问我任何关于古建筑的问题…" rows="1"></textarea>
+        <button id="ai-send-btn">发送</button>
+      </div>
+      <div id="ai-response-area"></div>
+    </div>
+  </div>
+  <div id="mascot-answer-bubble">
+    <span id="mascot-answer-text"></span>
+    <span id="mascot-answer-close">✕ 关闭</span>
+  </div>
+  <div id="mascot-click-bubble">
+    你要走啦？欢迎下次来我的家乡玩！<br/>
+    <a id="mascot-back-btn" href="叠檐侗韵.html">← 返回</a>
+  </div>
+</div>
+
+<script>
+function toggleCat(id){document.getElementById(id).classList.toggle('open');}
+function navTo(sid,tipText){
+  document.querySelectorAll('.kg-item').forEach(i=>i.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const t=document.getElementById(sid);
+  if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  showMascotMsg(tipText);
+}
+function openLb(el){
+  document.getElementById('lightbox-img').src=el.querySelector('img').src;
+  document.getElementById('lightbox-caption').textContent=(el.querySelector('.caption')||{textContent:''}).textContent;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLb(){document.getElementById('lightbox').classList.remove('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLb();});
+function showMascotMsg(text){
+  const a=document.getElementById('mascot-answer-bubble');
+  document.getElementById('mascot-answer-text').textContent=text;
+  a.style.display='block';
+  setTimeout(()=>{if(a.style.display==='block')a.style.display='none';},6000);
+}
+
+const clickBubble=document.getElementById('mascot-click-bubble');
+const mascotWrap=document.getElementById('mascot-wrap');
+const mascotImg=document.getElementById('mascot-img');
+const hoverBubble=document.getElementById('mascot-hover-bubble');
+const answerBubble=document.getElementById('mascot-answer-bubble');
+const answerText=document.getElementById('mascot-answer-text');
+const answerClose=document.getElementById('mascot-answer-close');
+const aiInput=document.getElementById('ai-user-input');
+const aiSendBtn=document.getElementById('ai-send-btn');
+const aiResponseArea=document.getElementById('ai-response-area');
+let clickBubbleOpen=false;
+
+const SYSTEM_PROMPT='你是侗楼歌，一位专注于侗族建筑知识的讲解员。只回答与侗族建筑、鼓楼、风雨桥、多重檐相关的问题。对于其他话题，礼貌地引导用户回到侗族建筑主题。回答请简洁专业，使用中文，150字以内。';
+const answers=['鼓楼位于侗寨中心，是村寨议事、集会、节庆的公共场所，象征族群凝聚力，也是村寨规划的中心参照点。','多重檐主要作用是遮雨防晒，侗族山区雨季漫长，宽大的出檐可保护木构架免受雨水侵蚀，也为楼内外提供遮阴空间。','全靠榫卯咬合，工匠精密计算每个榫头和卯眼的尺寸，受力越大咬合越紧，整体框架如同一个相互锁定的精密装置。','风雨桥以石砌桥墩沉入河床，桥墩间跨木梁，再在木梁上建廊屋。石墩承重，木构保温防水，分工明确，百年不倒。','主要用当地产的杉木，杉木纹理直、强度高、耐腐蚀，且在侗族山区广泛生长，是最理想的结构用材。','葫芦形宝顶象征福禄多子，火焰形宝顶象征驱邪辟凶，两种形式均寓意村寨生生不息、子孙繁盛。'];
+
+function toggleClickBubble(e){
+  e.stopPropagation();
+  clickBubbleOpen=!clickBubbleOpen;
+  clickBubble.style.display=clickBubbleOpen?'block':'none';
+  hoverBubble.style.display='none';
+  mascotWrap.classList.toggle('click-open',clickBubbleOpen);
+}
+mascotImg.addEventListener('mouseenter',function(){if(!clickBubbleOpen&&answerBubble.style.display!=='block')hoverBubble.style.display='block';});
+mascotWrap.addEventListener('mouseleave',function(){hoverBubble.style.display='none';});
+document.addEventListener('click',function(){
+  if(clickBubbleOpen){clickBubbleOpen=false;clickBubble.style.display='none';mascotWrap.classList.remove('click-open');}
+  if(answerBubble.style.display==='block'){answerBubble.style.display='none';mascotWrap.classList.remove('click-open');}
+});
+clickBubble.addEventListener('click',function(e){e.stopPropagation();});
+document.querySelectorAll('.mascot-q-item').forEach(function(el){
+  el.addEventListener('click',function(e){
+    e.stopPropagation();
+    hoverBubble.style.display='none';
+    answerText.textContent=answers[+el.dataset.q];
+    answerBubble.style.display='block';
+    mascotWrap.classList.add('click-open');
+  });
+});
+answerClose.addEventListener('click',function(e){e.stopPropagation();answerBubble.style.display='none';mascotWrap.classList.remove('click-open');});
+answerBubble.addEventListener('click',function(e){e.stopPropagation();});
+[hoverBubble,answerBubble,clickBubble].forEach(el=>el.addEventListener('click',e=>e.stopPropagation()));
+
+async function sendAiMessage(){
+  const question=aiInput.value.trim();if(!question)return;
+  aiInput.value='';aiSendBtn.disabled=true;
+  aiResponseArea.textContent='思考中';aiResponseArea.classList.add('ai-loading');
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:question}],systemPrompt:SYSTEM_PROMPT})});
+    const data=await res.json();
+    aiResponseArea.textContent=data.answer||'暂时无法回答，请稍后再试。';
+  }catch{aiResponseArea.textContent='网络错误，请稍后重试。';}
+  aiResponseArea.classList.remove('ai-loading');aiSendBtn.disabled=false;
+}
+aiSendBtn.addEventListener('click',function(e){e.stopPropagation();sendAiMessage();});
+aiInput.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAiMessage();}});
+aiInput.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px';});
+</script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三大古建筑 东方匠心与美学</title>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Serif SC', serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: url('背景2.jpg') center/cover no-repeat;
+    }
+
+    /* 天空渐变遮罩 */
+    .sky-layer {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 40%;
+      background: linear-gradient(to bottom,
+        rgba(120, 195, 245, 0.5) 0%,
+        rgba(180, 220, 255, 0.2) 65%,
+        transparent 100%);
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    /* 白云 */
+    .cloud {
+      position: absolute;
+      background: white;
+      border-radius: 50px;
+      opacity: 0.9;
+      animation: drift linear infinite;
+    }
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+    }
+    .cloud::before { width: 55%; height: 170%; top: -55%; left: 14%; }
+    .cloud::after  { width: 42%; height: 140%; top: -40%; right: 16%; }
+
+    @keyframes drift {
+      from { transform: translateX(-380px); }
+      to   { transform: translateX(calc(100vw + 380px)); }
+    }
+
+    /* 主标题 */
+    .title-block {
+      position: absolute;
+      top: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .title-main {
+      font-family: 'Ma Shan Zheng', 'Noto Serif SC', serif;
+      font-size: clamp(3rem, 6.5vw, 5.5rem);
+      background: linear-gradient(90deg, #3d1c02 0%, #c8860a 40%, #d4a017 60%, #8b6914 85%, #3d1c02 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.14em;
+      line-height: 1.1;
+      filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
+    }
+
+    .title-sub {
+      font-family: 'Ma Shan Zheng', 'Noto Serif SC', serif;
+      font-size: clamp(1.4rem, 3vw, 2.4rem);
+      color: #c8860a;
+      letter-spacing: 0.28em;
+      margin-top: 0.25em;
+      text-shadow: 0 2px 10px rgba(61,28,2,0.5);
+    }
+
+    /* 小人容器 */
+    .char-wrapper {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    @keyframes glow-yellow {
+      0%, 100% { filter: drop-shadow(0 0 6px #ffe066) drop-shadow(0 0 18px #fbbf24) drop-shadow(0 6px 14px rgba(0,0,0,0.4)); }
+      50%       { filter: drop-shadow(0 0 18px #ffe066) drop-shadow(0 0 40px #f59e0b) drop-shadow(0 6px 14px rgba(0,0,0,0.4)); }
+    }
+    @keyframes glow-red {
+      0%, 100% { filter: drop-shadow(0 0 6px #ff8080) drop-shadow(0 0 18px #ef4444) drop-shadow(0 6px 14px rgba(0,0,0,0.4)); }
+      50%       { filter: drop-shadow(0 0 18px #ff8080) drop-shadow(0 0 40px #dc2626) drop-shadow(0 6px 14px rgba(0,0,0,0.4)); }
+    }
+    @keyframes glow-green {
+      0%, 100% { filter: drop-shadow(0 0 6px #86efac) drop-shadow(0 0 18px #22c55e) drop-shadow(0 6px 14px rgba(0,0,0,0.4)); }
+      50%       { filter: drop-shadow(0 0 18px #86efac) drop-shadow(0 0 40px #16a34a) drop-shadow(0 6px 14px rgba(0,0,0,0.4)); }
+    }
+
+    .char-wrapper img {
+      width: 220px;
+      height: auto;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.4));
+    }
+
+    .char-wrapper:hover img {
+      transform: scale(1.1) translateY(-12px);
+    }
+
+    #yellow-wrap:hover img { animation: glow-yellow 0.8s ease-in-out infinite; }
+    #red-wrap:hover    img { animation: glow-red    0.8s ease-in-out infinite; }
+    #green-wrap:hover  img { animation: glow-green  0.8s ease-in-out infinite; }
+
+    /* 对话框 */
+    .bubble {
+      position: absolute;
+      bottom: calc(100% + 12px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      padding: 10px 18px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      font-family: 'Noto Serif SC', serif;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+    }
+
+    .char-wrapper:hover .bubble {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .bubble::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 8px solid transparent;
+    }
+
+    /* 小黄 */
+    #yellow-wrap { bottom: 22%; left: 18%; }
+    #yellow-wrap .bubble {
+      background: #fffbe6;
+      border: 2.5px solid #f59e0b;
+      color: #78350f;
+    }
+    #yellow-wrap .bubble::after { border-top-color: #f59e0b; }
+
+    /* 小红 */
+    #red-wrap { bottom: 28%; left: 50%; transform: translateX(-50%); }
+    #red-wrap .bubble {
+      background: #fff1f2;
+      border: 2.5px solid #ef4444;
+      color: #7f1d1d;
+    }
+    #red-wrap .bubble::after { border-top-color: #ef4444; }
+
+    /* 小绿 */
+    #green-wrap { bottom: 22%; right: 18%; }
+    #green-wrap .bubble {
+      background: #f0fdf4;
+      border: 2.5px solid #22c55e;
+      color: #14532d;
+    }
+    #green-wrap .bubble::after { border-top-color: #22c55e; }
+  </style>
+</head>
+<body>
+  <div class="scene">
+
+    <!-- 天空层（白云在此） -->
+    <div class="sky-layer">
+      <div class="cloud" style="width:190px;height:54px;top:16%;animation-duration:54s;"></div>
+      <div class="cloud" style="width:145px;height:44px;top:7%;animation-duration:70s;animation-delay:-20s;"></div>
+      <div class="cloud" style="width:230px;height:64px;top:30%;animation-duration:46s;animation-delay:-32s;"></div>
+      <div class="cloud" style="width:165px;height:50px;top:10%;animation-duration:78s;animation-delay:-10s;"></div>
+      <div class="cloud" style="width:205px;height:58px;top:22%;animation-duration:62s;animation-delay:-48s;"></div>
+    </div>
+
+    <!-- 主标题 -->
+    <div class="title-block">
+      <div class="title-main">三大古建筑</div>
+      <div class="title-sub">东方匠心与美学</div>
+    </div>
+
+    <!-- 小黄 → 叠檐侗韵 -->
+    <div class="char-wrapper" id="yellow-wrap" onclick="window.location.href='叠檐侗韵.html'">
+      <div class="bubble">嗨！准备好去看侗族多重檐了吗！快来吧！</div>
+      <img src="小黄.png" alt="小黄">
+    </div>
+
+    <!-- 小绿 → 粉墙黛瓦 -->
+    <div class="char-wrapper" id="green-wrap" onclick="window.location.href='粉墙黛瓦.html'">
+      <div class="bubble">徽派马头墙可是不容错过的建筑呢！快来看看！</div>
+      <img src="小绿.png" alt="小绿">
+    </div>
+
+    <!-- 小红 → 紫禁飞檐 -->
+    <div class="char-wrapper" id="red-wrap" onclick="window.location.href='紫禁飞檐.html'">
+      <div class="bubble">快来快来，我带你参观一下太和殿庑殿顶吧！</div>
+      <img src="小红.png" alt="小红">
+    </div>
+
+  </div>
+</body>
+</html>

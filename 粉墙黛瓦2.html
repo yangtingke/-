@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>粉墙黛瓦 · 深度解析</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:linear-gradient(135deg,#f0fff0 0%,#e0f8d0 50%,#c8f0b8 100%);min-height:100vh;font-family:'Noto Serif SC',serif;color:#2a6010}
+/* 滚动条 */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#f0fff0}
+::-webkit-scrollbar-thumb{background:#5aaa3a;border-radius:2px}
+/* 头部 */
+#page-header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px 14px;background:linear-gradient(180deg,rgba(218,237,145,.85),rgba(146,230,129,.92));border-bottom:2px solid rgba(80,160,40,.2);position:sticky;top:0;z-index:200}
+#page-header h1{font-size:32px;font-weight:700;letter-spacing:5px;background:linear-gradient(135deg,#2a6010,#5aaa3a,#2d6e1a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;background:linear-gradient(135deg,#5aaa3a,#92e681);color:#fff;border-radius:20px;font-size:13px;font-weight:700;text-decoration:none;letter-spacing:1px;box-shadow:0 2px 10px rgba(90,170,58,.35);border:1px solid rgba(146,230,129,.6);transition:filter .2s}
+.back-btn:hover{filter:brightness(1.1)}
+/* 主布局 */
+#page-layout{display:flex;min-height:calc(100vh - 70px)}
+/* 左侧知识图谱 */
+#kg-sidebar{width:260px;flex-shrink:0;position:sticky;top:70px;height:calc(100vh - 70px);overflow-y:auto;padding:18px 14px;border-right:1px solid rgba(90,170,58,.25);background:rgba(240,255,235,.75);backdrop-filter:blur(8px)}
+.kg-title{font-size:13px;font-weight:700;color:#2d6e1a;letter-spacing:2px;border-bottom:1.5px solid rgba(90,170,58,.35);padding-bottom:8px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.kg-title::before{content:'◆';font-size:8px;color:#5aaa3a}
+.kg-cat{margin-bottom:6px;border-radius:8px;overflow:hidden;border:1px solid rgba(90,170,58,.2)}
+.kg-cat-hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(90,170,58,.12);cursor:pointer;font-size:13px;font-weight:700;color:#2d6e1a;user-select:none;transition:background .2s}
+.kg-cat-hd:hover{background:rgba(90,170,58,.22)}
+.kg-cat-hd .arrow{font-size:10px;transition:transform .25s;color:#5aaa3a}
+.kg-cat.open .kg-cat-hd .arrow{transform:rotate(90deg)}
+.kg-items{display:none;padding:4px 0;background:rgba(255,255,255,.6)}
+.kg-cat.open .kg-items{display:block}
+.kg-item{padding:7px 16px 7px 20px;font-size:12px;color:#3a7a20;cursor:pointer;transition:background .15s,color .15s;border-left:2px solid transparent;line-height:1.5}
+.kg-item:hover{background:rgba(90,170,58,.14);color:#2a6010;border-left-color:#5aaa3a}
+.kg-item.active{background:rgba(90,170,58,.18);color:#2a6010;border-left-color:#5aaa3a;font-weight:600}
+/* 右侧内容区 */
+#content-area{flex:1;padding:24px 280px 40px 32px;overflow-y:auto;min-width:0}
+/* 内容段落 */
+.content-section{margin-bottom:32px;scroll-margin-top:88px}
+.section-heading{font-size:20px;font-weight:700;color:#2d6e1a;letter-spacing:3px;border-left:4px solid #5aaa3a;padding-left:14px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.section-sub{font-size:15px;font-weight:700;color:#3a7a20;letter-spacing:2px;border-bottom:1px dashed rgba(90,170,58,.4);padding-bottom:6px;margin:16px 0 10px}
+.section-body{font-size:13.5px;color:#2a5018;line-height:2;background:rgba(255,255,255,.72);border-radius:10px;padding:14px 18px;border:1px solid rgba(90,170,58,.18);box-shadow:0 2px 10px rgba(60,140,30,.06)}
+/* 瀑布流 */
+#gallery-section{margin-bottom:40px;scroll-margin-top:88px}
+.gallery-title{font-size:20px;font-weight:700;color:#2d6e1a;letter-spacing:3px;border-left:4px solid #5aaa3a;padding-left:14px;margin-bottom:18px}
+.gallery-grid{columns:3;column-gap:12px}
+.gallery-item{break-inside:avoid;margin-bottom:12px;border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;position:relative}
+.gallery-item:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(60,140,30,.25)}
+.gallery-item img{width:100%;display:block;object-fit:cover}
+.gallery-item .caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(30,80,10,.75));color:#fff;font-size:11px;padding:14px 10px 7px;letter-spacing:1px;opacity:0;transition:opacity .25s}
+.gallery-item:hover .caption{opacity:1}
+/* Lightbox */
+#lightbox{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox.active{display:flex}
+#lightbox-img{max-width:88vw;max-height:88vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.6);object-fit:contain}
+#lightbox-close{position:absolute;top:18px;right:26px;font-size:36px;color:#fff;cursor:pointer;line-height:1;opacity:.8;transition:opacity .2s}
+#lightbox-close:hover{opacity:1}
+#lightbox-caption{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;letter-spacing:2px;text-shadow:0 1px 4px rgba(0,0,0,.8);white-space:nowrap}
+/* 吉祥物 */
+#huiyumo-wrap{position:fixed;top:0;right:0;width:396px;height:396px;z-index:10001;pointer-events:auto}
+#huiyumo{height:396px;width:396px;z-index:10001;cursor:pointer;transition:filter .35s ease;object-fit:contain;position:absolute;bottom:0;right:0}
+#huiyumo:hover{filter:drop-shadow(0 0 10px rgba(100,200,60,.95)) drop-shadow(0 0 22px rgba(80,180,40,.7)) drop-shadow(0 0 4px rgba(146,230,129,.8))}
+.char-bubble{position:absolute;background:rgba(240,255,235,.97);border:1.5px solid #5aaa3a;border-radius:14px;padding:10px 16px;font-size:13px;color:#2a6010;white-space:nowrap;box-shadow:0 4px 22px rgba(80,160,40,.22);z-index:10002;letter-spacing:.5px;line-height:1.6;pointer-events:none}
+.char-bubble.clickable{pointer-events:auto}
+.char-bubble::after{content:'';position:absolute;top:18px;right:-9px;border:5px solid transparent;border-left-color:rgba(240,255,235,.97)}
+.char-bubble::before{content:'';position:absolute;top:17px;right:-11px;border:6px solid transparent;border-left-color:#5aaa3a}
+.char-q-list{margin-top:8px;border-top:1px solid rgba(90,170,58,.35);padding-top:8px;display:flex;flex-direction:column;gap:5px}
+.char-q-item{font-size:12px;color:#3a7a20;cursor:pointer;padding:3px 6px;border-radius:6px;transition:background .15s,color .15s;pointer-events:auto;line-height:1.5;white-space:normal}
+.char-q-item:hover{background:rgba(90,170,58,.18);color:#2a6010}
+#char-answer-bubble{position:absolute;background:rgba(240,255,235,.97);border:1.5px solid #5aaa3a;border-radius:14px;padding:12px 16px;font-size:13px;color:#2a6010;white-space:normal;box-shadow:0 4px 22px rgba(80,160,40,.22);z-index:10003;letter-spacing:.5px;line-height:1.7;width:260px;display:none;top:60px;right:calc(100% + 12px)}
+#char-answer-bubble::after{content:'';position:absolute;top:18px;right:-9px;border:5px solid transparent;border-left-color:rgba(240,255,235,.97)}
+#char-answer-bubble::before{content:'';position:absolute;top:17px;right:-11px;border:6px solid transparent;border-left-color:#5aaa3a}
+#char-answer-close{display:block;margin-top:10px;font-size:11px;color:#5aaa3a;cursor:pointer;text-align:right;pointer-events:auto}
+#ai-chat-area{margin-top:10px;border-top:1px solid rgba(90,170,58,.35);padding-top:10px}
+#ai-input-row{display:flex;gap:6px;align-items:flex-end}
+#ai-user-input{flex:1;font-size:12px;font-family:'Noto Serif SC',serif;padding:5px 10px;border-radius:10px;border:1px solid #5aaa3a;background:rgba(255,255,255,.9);color:#2a6010;outline:none;resize:none;min-height:34px;max-height:80px;line-height:1.5}
+#ai-send-btn{padding:5px 10px;background:linear-gradient(135deg,#5aaa3a,#92e681);color:#fff;border:none;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:'Noto Serif SC',serif;flex-shrink:0}
+#ai-send-btn:disabled{opacity:.5;cursor:not-allowed}
+#ai-response-area{margin-top:8px;font-size:12px;color:#2a6010;line-height:1.75;min-height:0;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+.ai-loading::after{content:'…';animation:blink .8s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+
+<!-- 头部 -->
+<header id="page-header">
+  <h1>粉墙黛瓦 · 深度解析</h1>
+  <a href="粉墙黛瓦.html" class="back-btn">← 返回</a>
+</header>
+
+<!-- 主体布局 -->
+<div id="page-layout">
+
+<!-- 左侧知识图谱 -->
+<aside id="kg-sidebar">
+  <div class="kg-title">知识图谱目录</div>
+
+  <!-- 历史价值 -->
+  <div class="kg-cat open" id="cat-history">
+    <div class="kg-cat-hd" onclick="toggleCat('cat-history')">
+      <span>📜 历史价值</span><span class="arrow">▶</span>
+    </div>
+    <div class="kg-items">
+      <div class="kg-item" onclick="navTo('sec-h1','礼制溯源——马头墙高度对应宅主身份，是徽州礼制文化的物质载体，体现尊卑有序的社会结构。')">礼制溯源</div>
+      <div class="kg-item" onclick="navTo('sec-h2','防火历史——马头墙最初作为封火墙出现，阻断火势在密集村落中蔓延，保护整村安全。')">防火历史</div>
+      <div class="kg-item" onclick="navTo('sec-h3','徽商文化——明清徽商经商致富后，将财富体现于马头墙的精细程度，墙越高越精越富有。')">徽商文化</div>
+      <div class="kg-item" onclick="navTo('sec-h4','世界遗产——西递、宏村被列入世界文化遗产，是研究明清建筑技术与社会文化的珍贵资料。')">文化遗产</div>
+    </div>
+  </div>
+
+  <!-- 形制特征 -->
+  <div class="kg-cat" id="cat-form">
+    <div class="kg-cat-hd" onclick="toggleCat('cat-form')">
+      <span>🏛️ 形制特征</span><span class="arrow">▶</span>
+    </div>
+    <div class="kg-items">
+      <div class="kg-item" onclick="navTo('sec-f1','三种墙头形式——鹊尾式最为常见，印斗式用于官宦人家，坐吻式为最高等级，形态各有差异。')">三种墙头形式</div>
+      <div class="kg-item" onclick="navTo('sec-f2','阶梯级数——马头墙级数一至五级，严格对应宅主身份等级，级数越多越显贵。')">阶梯级数规制</div>
+      <div class="kg-item" onclick="navTo('sec-f3','白墙黛瓦——粉白墙面与青灰瓦顶的强烈色彩对比，是徽派建筑最鲜明的视觉标志。')">白墙黛瓦色彩</div>
+      <div class="kg-item" onclick="navTo('sec-f4','进数与院落——一进、二进、三进的院落组合方式，体现家族规模与财力。')">进数与院落</div>
+    </div>
+  </div>
+
+  <!-- 结构技艺 -->
+  <div class="kg-cat" id="cat-tech">
+    <div class="kg-cat-hd" onclick="toggleCat('cat-tech')">
+      <span>🔧 结构技艺</span><span class="arrow">▶</span>
+    </div>
+    <div class="kg-items">
+      <div class="kg-item" onclick="navTo('sec-t1','青砖砌筑——厚度240至370毫米，磨砖对缝工艺精细，每块砖缝隙均匀，体现徽州工匠的高超技艺。')">青砖砌筑工艺</div>
+      <div class="kg-item" onclick="navTo('sec-t2','构造层次——从下至上依次为墙身、腰线、墙帽、压顶、吻饰，层次分明，各有功能。')">构造层次</div>
+      <div class="kg-item" onclick="navTo('sec-t3','博缝板与披水——山墙顶部防水构造，保护木构架免受雨水侵蚀，是实用与美观的结合。')">博缝板与披水</div>
+      <div class="kg-item" onclick="navTo('sec-t4','老墨线与仔墨线——施工控制线体系，保证砌筑精度，是徽州传统建筑施工的核心技术。')">墨线控制体系</div>
+    </div>
+  </div>
+</aside>
+
+<!-- 右侧内容区 -->
+<main id="content-area">
+
+  <!-- 历史价值 -->
+  <section class="content-section" id="sec-h1">
+    <h2 class="section-heading">📜 历史价值</h2>
+    <h3 class="section-sub">礼制溯源</h3>
+    <div class="section-body">马头墙的高低等级与宅主的社会身份严格对应，是徽州礼制文化的物质载体。高门大户马头墙往往五级叠升，而普通农户仅一至二级。这种等级差异通过建筑形态直接体现出"尊卑有序"的儒家伦理观，是中国建筑文化中礼制精神的具体表达。</div>
+  </section>
+  <section class="content-section" id="sec-h2">
+    <h3 class="section-sub">防火历史</h3>
+    <div class="section-body">徽州村落建筑密集，木构架极易引发火灾蔓延。马头墙最初正是作为"封火墙"出现——高出屋面的砖墙将相邻建筑隔开，即便一栋房屋失火，火焰与飞溅的火星也被阻挡在墙外，有效保护了整个村落。宏村、西递至今留存的古民居，都得益于这道砖墙的保护。</div>
+  </section>
+  <section class="content-section" id="sec-h3">
+    <h3 class="section-sub">徽商文化</h3>
+    <div class="section-body">明清两代，徽州商人纵横天下，积累了大量财富。"富贵不还乡，如锦衣夜行"，衣锦还乡的徽商热衷于修缮祖宅，将财力体现于马头墙的精细程度——砖雕越繁、层数越高、吻饰越华贵，越代表家族的地位与财力。马头墙因此成为徽商文化最直接的物质符号。</div>
+  </section>
+  <section class="content-section" id="sec-h4">
+    <h3 class="section-sub">文化遗产</h3>
+    <div class="section-body">1999年，皖南古村落西递、宏村被列入《世界文化遗产名录》，成为中国首批列入世遗的民居类建筑。这两处保存完好的徽派村落，是研究明清建筑技术、社会结构、商业文化的珍贵活化石，马头墙是其中最具辨识度的建筑语言。</div>
+  </section>
+
+  <!-- 形制特征 -->
+  <section class="content-section" id="sec-f1">
+    <h2 class="section-heading">🏛️ 形制特征</h2>
+    <h3 class="section-sub">三种墙头形式</h3>
+    <div class="section-body">马头墙墙头主要分三种形式：<strong>鹊尾式</strong>最为常见，翘角如喜鹊之尾，灵动轻盈；<strong>印斗式</strong>墙帽呈方形如官印，多用于有功名的仕宦人家；<strong>坐吻式</strong>以吻兽坐于墙顶，造型最为华贵，是徽派建筑中等级最高的墙头形制。</div>
+  </section>
+  <section class="content-section" id="sec-f2">
+    <h3 class="section-sub">阶梯级数规制</h3>
+    <div class="section-body">马头墙的阶梯层数从一级到五级不等，且有严格的社会礼制约束：普通民居一至二级，富户商贾三级，有功名的仕宦人家四级，地方士绅五级。层数越多，造型越复杂，施工难度越高，所费银两越多，也越能彰显家族地位。</div>
+  </section>
+  <section class="content-section" id="sec-f3">
+    <h3 class="section-sub">白墙黛瓦色彩</h3>
+    <div class="section-body">粉白的石灰粉刷墙面与深青色的小瓦屋顶，构成了徽派建筑最标志性的视觉语言。白墙来自石灰调和的粉刷层，在皖南多雨湿润的气候下，白色墙面与青山绿水相映成趣；黛色的瓦片则以当地烧制的龙骨瓦为主，经久耐用，素雅大方。</div>
+  </section>
+  <section class="content-section" id="sec-f4">
+    <h3 class="section-sub">进数与院落组合</h3>
+    <div class="section-body">徽派民居按"进"来划分空间层次，一进为最基本的门厅加天井组合，二进增加正堂，三进则有前后花园与多个天井。进数越多代表家族规模越大。每进之间以天井采光通风，天井是徽派建筑的灵魂，也是"四水归堂、聚财纳气"的风水体现。</div>
+  </section>
+
+  <!-- 结构技艺 -->
+  <section class="content-section" id="sec-t1">
+    <h2 class="section-heading">🔧 结构技艺</h2>
+    <h3 class="section-sub">青砖砌筑工艺</h3>
+    <div class="section-body">徽州马头墙所用青砖厚度为240至370毫米，远厚于普通砌体，以增强封火隔热效果。工匠采用"磨砖对缝"技法，将砖块边角打磨光滑后严密拼合，缝隙均匀细腻，不填灰缝时甚至可以"白刀缝"。这一工艺对工匠技艺要求极高，是徽派建筑质量的重要保障。</div>
+  </section>
+  <section class="content-section" id="sec-t2">
+    <h3 class="section-sub">构造层次</h3>
+    <div class="section-body">马头墙从下至上依次由以下部分构成：<strong>墙身</strong>（承重主体）→ <strong>腰线</strong>（水平装饰线条，分隔墙身与上部）→ <strong>墙帽</strong>（阶梯状收分部分）→ <strong>压顶</strong>（墙顶防水层，通常为出挑的青砖或瓦片）→ <strong>吻饰</strong>（墙顶装饰件，根据等级选择鹊尾、印斗或坐吻）。</div>
+  </section>
+  <section class="content-section" id="sec-t3">
+    <h3 class="section-sub">博缝板与披水</h3>
+    <div class="section-body">博缝板位于山墙顶部，紧贴椽子外侧，起到遮盖封护木构件端头的作用，防止雨水从侧面渗入。披水砖则是沿博缝板外缘出挑的小型瓦片或砖，引导雨水向外排出，防止在墙体上形成渍水带。这两道构件是马头墙长久保存的重要技术保障。</div>
+  </section>
+  <section class="content-section" id="sec-t4">
+    <h3 class="section-sub">墨线控制体系</h3>
+    <div class="section-body">徽州工匠在砌筑马头墙前，会先用"老墨线"（主控制线）和"仔墨线"（细部控制线）在地面和墙面上弹线定位，确保砖块的横平竖直与层层收分的精准度。这套口耳相传的墨线体系，是在没有现代测量工具的条件下保证建筑精度的核心技术，至今仍被部分传统工匠沿用。</div>
+  </section>
+
+  <!-- 瀑布流图库 -->
+  <section id="gallery-section">
+    <h2 class="gallery-title">📷 实景影像</h2>
+    <div class="gallery-grid">
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=600&q=80" alt="徽州古村白墙">
+        <div class="caption">皖南古村白墙黛瓦</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?w=600&q=80" alt="宏村晨雾">
+        <div class="caption">宏村晨雾倒影</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1533050487297-09b450131914?w=600&q=80" alt="马头墙细节">
+        <div class="caption">马头墙层叠阶梯</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1537274942065-eda9d00a6293?w=600&q=80" alt="徽派天井">
+        <div class="caption">天井采光结构</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80" alt="西递古巷">
+        <div class="caption">西递古巷石板路</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=600&q=80" alt="徽派砖雕">
+        <div class="caption">徽派砖雕门罩</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1508669232496-137b159c1cdb?w=600&q=80" alt="宏村月沼">
+        <div class="caption">宏村月沼倒影</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80" alt="皖南山村">
+        <div class="caption">皖南山水古村</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1551009175-8a68da93d5f9?w=600&q=80" alt="徽派院落">
+        <div class="caption">徽派院落天井</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=600&q=80" alt="古民居内部">
+        <div class="caption">古民居木雕装饰</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80" alt="春日古村">
+        <div class="caption">春日村落烟雨</div>
+      </div>
+      <div class="gallery-item" onclick="openLb(this)">
+        <img src="https://images.unsplash.com/photo-1555990793-da11153b6c16?w=600&q=80" alt="徽派屋顶">
+        <div class="caption">屋顶瓦当细节</div>
+      </div>
+    </div>
+  </section>
+
+</main><!-- end content-area -->
+</div><!-- end page-layout -->
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLb()">
+  <span id="lightbox-close" onclick="closeLb()">×</span>
+  <img id="lightbox-img" src="" alt="">
+  <div id="lightbox-caption"></div>
+</div>
+
+<!-- 徽雨墨人物 -->
+<div id="huiyumo-wrap" style="position:fixed;top:0;right:0;width:396px;height:396px;z-index:10001;pointer-events:auto">
+  <img id="huiyumo" src="./小绿.png" alt="徽雨墨">
+  <div id="char-hover-tip" class="char-bubble clickable" style="display:none;top:60px;right:calc(100% + -100px);white-space:normal;width:260px;">
+    你好，我叫徽雨墨，快来和我一起了解徽派马头墙吧！
+    <div class="char-q-list">
+      <span class="char-q-item" data-q="0">① 为什么叫马头墙？</span>
+      <span class="char-q-item" data-q="1">② 最核心的实用功能是什么？</span>
+      <span class="char-q-item" data-q="2">③ 外观有什么特点？</span>
+      <span class="char-q-item" data-q="3">④ 除了防火还有什么作用？</span>
+      <span class="char-q-item" data-q="4">⑤ 哪些建筑最常用马头墙？</span>
+      <span class="char-q-item" data-q="5">⑥ 属于官方礼制建筑吗？</span>
+    </div>
+    <div id="ai-chat-area">
+      <div id="ai-input-row">
+        <textarea id="ai-user-input" placeholder="问我任何关于古建筑的问题…" rows="1"></textarea>
+        <button id="ai-send-btn">发送</button>
+      </div>
+      <div id="ai-response-area"></div>
+    </div>
+  </div>
+  <div id="char-answer-bubble">
+    <span id="char-answer-text"></span>
+    <span id="char-answer-close">✕ 关闭</span>
+  </div>
+  <div id="char-click-dialog" class="char-bubble clickable" style="display:none;top:60px;right:calc(100% + 12px)">
+    <div>你要走啦？欢迎下次来我的家乡玩！</div>
+    <div style="margin-top:10px;text-align:center">
+      <a href="粉墙黛瓦.html" style="display:inline-block;padding:6px 20px;background:linear-gradient(135deg,#5aaa3a,#92e681);color:#fff;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1px;text-decoration:none;box-shadow:0 2px 10px rgba(90,170,58,.4);border:1px solid rgba(146,230,129,.6)">← 返 回</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleCat(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function navTo(sectionId, tipText) {
+  document.querySelectorAll('.kg-item').forEach(i => i.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const target = document.getElementById(sectionId);
+  if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  showMascotMsg(tipText);
+}
+
+function openLb(el) {
+  const img = el.querySelector('img');
+  const cap = el.querySelector('.caption');
+  document.getElementById('lightbox-img').src = img.src;
+  document.getElementById('lightbox-caption').textContent = cap ? cap.textContent : '';
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLb() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+function showMascotMsg(text) {
+  const ansEl = document.getElementById('char-answer-bubble');
+  document.getElementById('char-answer-text').textContent = text;
+  ansEl.style.display = 'block';
+  setTimeout(() => { if (ansEl.style.display === 'block') ansEl.style.display = 'none'; }, 6000);
+}
+
+// 徽雨墨人物交互 + AI对话
+(function(){
+  const charImg      = document.getElementById('huiyumo');
+  const hoverTip     = document.getElementById('char-hover-tip');
+  const clickDialog  = document.getElementById('char-click-dialog');
+  const answerBubble = document.getElementById('char-answer-bubble');
+  const answerText   = document.getElementById('char-answer-text');
+  const answerClose  = document.getElementById('char-answer-close');
+  const aiInput      = document.getElementById('ai-user-input');
+  const aiSendBtn    = document.getElementById('ai-send-btn');
+  const aiResponseArea = document.getElementById('ai-response-area');
+  if (!charImg) return;
+  let dialogOpen = false;
+
+  const SYSTEM_PROMPT = '你是徽雨墨，一位专注于徽派建筑知识的讲解员。只回答与徽派建筑、马头墙、皖南古民居相关的问题。对于其他话题，礼貌地引导用户回到徽派建筑主题。回答请简洁专业，使用中文，150字以内。';
+  const answers = [
+    '墙体轮廓高低错落、翘角形似昂首马头，故而得名。',
+    '首要作用是防火封火，阻断火势在相邻房屋间蔓延。',
+    '白墙黛瓦、阶梯式层层跌落，墙头翘角造型优美，素雅简约。',
+    '可以挡风、遮阳、隔热，还能规整村落风貌、提升建筑美感。',
+    '主要用于徽派古民居、祠堂、书院、古村落建筑群。',
+    '不属于，是民间乡土建筑特色构造，无皇家等级限制。'
+  ];
+
+  charImg.addEventListener('mouseenter', () => { if (!dialogOpen && answerBubble.style.display !== 'block') hoverTip.style.display = 'block'; });
+  document.getElementById('huiyumo-wrap').addEventListener('mouseleave', () => { hoverTip.style.display = 'none'; });
+  charImg.addEventListener('click', (e) => {
+    e.stopPropagation();
+    hoverTip.style.display = 'none';
+    answerBubble.style.display = 'none';
+    dialogOpen = !dialogOpen;
+    clickDialog.style.display = dialogOpen ? 'block' : 'none';
+  });
+  document.querySelectorAll('.char-q-item').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      hoverTip.style.display = 'none';
+      answerText.textContent = answers[+el.dataset.q];
+      answerBubble.style.display = 'block';
+    });
+  });
+  answerClose.addEventListener('click', function(e) { e.stopPropagation(); answerBubble.style.display = 'none'; });
+  answerBubble.addEventListener('click', e => e.stopPropagation());
+  [hoverTip, clickDialog].forEach(el => el.addEventListener('click', e => e.stopPropagation()));
+  document.addEventListener('click', () => {
+    if (dialogOpen) { dialogOpen = false; clickDialog.style.display = 'none'; }
+    if (answerBubble.style.display === 'block') answerBubble.style.display = 'none';
+  });
+
+  async function sendAiMessage() {
+    const question = aiInput.value.trim();
+    if (!question) return;
+    aiInput.value = '';
+    aiSendBtn.disabled = true;
+    aiResponseArea.textContent = '思考中';
+    aiResponseArea.classList.add('ai-loading');
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({messages: [{role:'user',content:question}], systemPrompt: SYSTEM_PROMPT})
+      });
+      const data = await res.json();
+      aiResponseArea.textContent = data.answer || '暂时无法回答，请稍后再试。';
+    } catch { aiResponseArea.textContent = '网络错误，请稍后重试。'; }
+    aiResponseArea.classList.remove('ai-loading');
+    aiSendBtn.disabled = false;
+  }
+  aiSendBtn.addEventListener('click', e => { e.stopPropagation(); sendAiMessage(); });
+  aiInput.addEventListener('keydown', e => { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAiMessage();} });
+  aiInput.addEventListener('input', function(){ this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,80)+'px'; });
+})();
+</script>
+</body>
+</html>

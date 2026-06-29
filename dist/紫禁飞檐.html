@@ -55,15 +55,6 @@ body{background:linear-gradient(160deg,#fbdde0 0%,#fce8ea 40%,#f8d5d8 70%,#fbdde
 #char-answer-bubble::before{content:'';position:absolute;right:-11px;top:17px;border:6px solid transparent;border-left-color:#c0405a;}
 #char-answer-close{display:block;margin-top:10px;font-size:11px;color:#c0405a;cursor:pointer;text-align:right;pointer-events:auto;}
 #char-answer-close:hover{text-decoration:underline;}
-/* AI 对话区 */
-#ai-chat-area{margin-top:10px;border-top:1px solid rgba(192,64,90,.3);padding-top:10px;}
-#ai-input-row{display:flex;gap:6px;align-items:flex-end;}
-#ai-user-input{flex:1;font-size:12px;font-family:'Noto Serif SC',serif;padding:5px 10px;border-radius:10px;border:1px solid #c0405a;background:rgba(255,255,255,.9);color:#8b2040;outline:none;resize:none;min-height:34px;max-height:80px;line-height:1.5;}
-#ai-send-btn{padding:5px 10px;background:linear-gradient(135deg,#c0405a,#e07090);color:#fff;border:none;border-radius:10px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:'Noto Serif SC',serif;flex-shrink:0;}
-#ai-send-btn:disabled{opacity:.5;cursor:not-allowed;}
-#ai-response-area{margin-top:8px;font-size:12px;color:#8b2040;line-height:1.75;min-height:0;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;}
-.ai-loading::after{content:'…';animation:blink .8s step-end infinite;}
-@keyframes blink{50%{opacity:0;}}
 </style>
 </head>
 <body>
@@ -119,7 +110,7 @@ body{background:linear-gradient(160deg,#fbdde0 0%,#fce8ea 40%,#f8d5d8 70%,#fbdde
   <img id="gonghuayan" src="./小红.png" alt="宫华檐"
        style="position:absolute;bottom:0;right:0;height:350px;width:auto;pointer-events:auto">
   <!-- Hover bubble -->
-  <div id="char-hover-tip" class="char-bubble" style="display:none;top:60px;right:calc(100% + -100px);pointer-events:auto;white-space:normal;width:260px;">
+  <div id="char-hover-tip" class="char-bubble" style="display:none;top:60px;right:calc(100% + -100px);pointer-events:auto;white-space:normal;width:240px;">
     你好，我叫宫华檐，快来和我一起了解太和殿庑殿顶吧！
     <div class="char-q-list">
       <span class="char-q-item" data-q="0">① 太和殿采用什么屋顶形制？</span>
@@ -128,13 +119,6 @@ body{background:linear-gradient(160deg,#fbdde0 0%,#fce8ea 40%,#f8d5d8 70%,#fbdde
       <span class="char-q-item" data-q="3">④ 民间可以建造庑殿顶吗？</span>
       <span class="char-q-item" data-q="4">⑤ 庑殿顶有什么象征寓意？</span>
       <span class="char-q-item" data-q="5">⑥ 重檐和单檐有什么区别？</span>
-    </div>
-    <div id="ai-chat-area">
-      <div id="ai-input-row">
-        <textarea id="ai-user-input" placeholder="问我任何关于古建筑的问题…" rows="1"></textarea>
-        <button id="ai-send-btn">发送</button>
-      </div>
-      <div id="ai-response-area"></div>
     </div>
   </div>
   <!-- 答案气泡 -->
@@ -636,18 +620,13 @@ setTimeout(() => {
 }, 100);
 // 宫华檐 character interactions
 (function(){
-  const charImg      = document.getElementById('gonghuayan');
-  const hoverTip     = document.getElementById('char-hover-tip');
-  const clickDialog  = document.getElementById('char-click-dialog');
+  const charImg    = document.getElementById('gonghuayan');
+  const hoverTip   = document.getElementById('char-hover-tip');
+  const clickDialog= document.getElementById('char-click-dialog');
   const answerBubble = document.getElementById('char-answer-bubble');
   const answerText   = document.getElementById('char-answer-text');
   const answerClose  = document.getElementById('char-answer-close');
-  const aiInput      = document.getElementById('ai-user-input');
-  const aiSendBtn    = document.getElementById('ai-send-btn');
-  const aiResponseArea = document.getElementById('ai-response-area');
   let dialogOpen = false;
-
-  const SYSTEM_PROMPT = '你是宫华檐，一位专注于故宫建筑知识的讲解员。只回答与故宫、太和殿、庑殿顶、斗拱、皇家建筑相关的问题。对于其他话题，礼貌地引导用户回到皇家建筑主题。回答请简洁专业，使用中文，150字以内。';
 
   const answers = [
     '采用重檐庑殿顶，是中国古建筑最高等级屋顶。',
@@ -662,7 +641,9 @@ setTimeout(() => {
     if (!dialogOpen && answerBubble.style.display !== 'block') hoverTip.style.display = 'block';
   });
   const wrapEl = document.getElementById('gonghuayan-wrap');
-  wrapEl.addEventListener('mouseleave', () => { hoverTip.style.display = 'none'; });
+  wrapEl.addEventListener('mouseleave', () => {
+    hoverTip.style.display = 'none';
+  });
   charImg.addEventListener('click', (e) => {
     e.stopPropagation();
     hoverTip.style.display = 'none';
@@ -678,35 +659,11 @@ setTimeout(() => {
       answerBubble.style.display = 'block';
     });
   });
-  answerClose.addEventListener('click', function(e) { e.stopPropagation(); answerBubble.style.display = 'none'; });
+  answerClose.addEventListener('click', function(e) {
+    e.stopPropagation();
+    answerBubble.style.display = 'none';
+  });
   answerBubble.addEventListener('click', e => e.stopPropagation());
-
-  async function sendAiMessage() {
-    const question = aiInput.value.trim();
-    if (!question) return;
-    aiInput.value = '';
-    aiSendBtn.disabled = true;
-    aiResponseArea.textContent = '思考中';
-    aiResponseArea.classList.add('ai-loading');
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({messages: [{role:'user',content:question}], systemPrompt: SYSTEM_PROMPT})
-      });
-      const data = await res.json();
-      aiResponseArea.textContent = data.answer || '暂时无法回答，请稍后再试。';
-    } catch(err) {
-      aiResponseArea.textContent = '网络错误，请稍后重试。';
-    }
-    aiResponseArea.classList.remove('ai-loading');
-    aiSendBtn.disabled = false;
-  }
-  aiSendBtn.addEventListener('click', function(e){ e.stopPropagation(); sendAiMessage(); });
-  aiInput.addEventListener('keydown', function(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAiMessage();} });
-  aiInput.addEventListener('input', function(){ this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,80)+'px'; });
-  [hoverTip, answerBubble, clickDialog].forEach(el => el.addEventListener('click', e => e.stopPropagation()));
-
   document.addEventListener('click', () => {
     if (dialogOpen) { dialogOpen = false; clickDialog.style.display = 'none'; }
     if (answerBubble.style.display === 'block') answerBubble.style.display = 'none';
